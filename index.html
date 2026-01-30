@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elektrihinna Jälgija</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f4f7f9; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
+        .container { max-width: 800px; width: 100%; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.05); text-align: center; box-sizing: border-box; }
+        .status-box { padding: 30px 20px; border-radius: 18px; margin-bottom: 20px; transition: all 0.3s ease; }
+        .price-value { font-size: 3.8em; font-weight: 800; margin: 0; display: flex; justify-content: center; align-items: baseline; gap: 5px; }
+        .unit { font-size: 0.4em; font-weight: 600; opacity: 0.8; }
+        .cheap { background: #e6fffa; color: #234e52; border: 1px solid #b2f5ea; }
+        .normal { background: #fffaf0; color: #744210; border: 1px solid #fbd38d; }
+        .expensive { background: #fff5f5; color: #742a2a; border: 1px solid #feb2b2; }
+        .chart-container { position: relative; height: 300px; width: 100%; margin-top: 20px; }
+        h2 { margin: 10px 0; color: #2d3748; }
+        #date-info { font-size: 0.85em; color: #718096; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 id="header-title">Elektri börsihind</h2>
+    <div id="date-info">Uuendan andmeid...</div>
+    
+    <div id="status-card" class="status-box" style="display:none;">
+        <div class="price-value"><span id="current-price">0.00</span> <span class="unit">s/kWh</span></div>
+        <p id="trend-text" style="font-weight: 600; margin-top: 10px; font-size: 1.1em;"></p>
+    </div>
+
+    <div id="loader">Ootan andmeid Eleringist...</div>
+
+    <div class="chart-container">
+        <canvas id="priceChart"></canvas>
+    </div>
+</div>
+
+<script>
+    let priceChart;
+
+    async function updateData() {
+        const dateInfo = document.getElementById('date-info');
+        const loader = document.getElementById('loader');
+        const statusCard = document.getElementById('status-card');
+
+        try {
+            // Arvutame ajad: tänase algus ja homse lõpp
+            const now = new Date();
+            const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+            const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2).toISOString();
+            
+            // Eleringi API kutse
+            const url = `https://dashboard.elering.ee/api/nps/price?start=${start}&end=${end}`;
+            const response = await fetch(url);
+            
+            if (!response.ok) throw new Error('API viga');
+            
+            const json = await response.json();
+            const eeData = json.data.ee;
+
+            if (!eeData || eeData.length === 0) throw new Error('Andmed puuduvad');
+
+            const labels = [];
+            const prices = [];
+            const currentTimestamp = Math.floor(Date.now() / 1000 / 3600) * 3600;
+            let currentPrice = null;
+
+            eeData.forEach(item => {
+                const date = new Date(item.timestamp * 1000);
+                const hour = date.getHours();
+                const day = date.getDate() === now.getDate() ? "" : "H: ";
+                
+                labels.push(`${day}${hour}:00`);
+                // Arvutus: (Hind / 10) * 1.22 (KM)
+                const priceKWh = (item.price / 10 * 1.22).toFixed(2);
+                prices.push(parseFloat(priceKWh));
+
+                if (item.timestamp === currentTimestamp) {
+                    currentPrice = priceKWh;
+                }
+            });
+
+            // Kui täpset tunnihinda ei leitud, võta viimane saadavalolev
+            if (!currentPrice) currentPrice = prices[0];
+
+            loader.style.display = 'none';
+            statusCard.style.display = 'block';
+            renderUI(currentPrice, labels, prices);
+            dateInfo.innerText = `Viimane uuendus: ${now.toLocaleTimeString('et-EE')}`;
+
+        } catch (error) {
+            console.error(error);
+            loader.innerText = "Andmete viga! Kontrolli internetti või proovi uuesti.";
+            loader.style.color = "red";
+        }
+    }
+
+    function renderUI(price, labels, prices) {
+        document.getElementById('current-price').innerText = price;
+        const card = document.getElementById('status-card');
+        const trend = document.getElementById('trend-text');
+        
+        const p = parseFloat(price);
+        if (p < 10) {
+            card.className = 'status-box cheap';
+            trend.innerText = "Soodne! Käivita pesumasin. ✅";
+        } else if (p < 20) {
+            card.className = 'status-box normal';
+            trend.innerText = "Mõistlik hind. ⚖️";
+        } else {
+            card.className = 'status-box expensive';
+            trend.innerText = "Kallis aeg. Hoia kokku. ❌";
+        }
+
+        const ctx = document.getElementById('priceChart').getContext('2d');
+        if (priceChart) priceChart.destroy();
+
+        priceChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: prices,
+                    borderColor: '#3182ce',
+                    backgroundColor: 'rgba(49, 130, 206, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    pointHitRadius: 20
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true },
+                    x: { grid: { display: false }, ticks: { maxTicksLimit: 10 } }
+                }
+            }
+        });
+    }
+
+    updateData();
+</script>
+
+</body>
+</html>
