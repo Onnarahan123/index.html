@@ -8,14 +8,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #f1f5f9;
+            --bg-color: #f8fafc;
             --card-bg: #ffffff;
             --text-main: #0f172a;
         }
         body { 
             font-family: 'Inter', sans-serif; 
             background-color: var(--bg-color); 
-            margin: 0; padding: 10px; 
+            margin: 0; padding: 15px; 
             display: flex; flex-direction: column; align-items: center; 
             color: var(--text-main);
             min-height: 100vh;
@@ -23,40 +23,51 @@
         .app-container { 
             max-width: 600px; width: 100%; 
             background: var(--card-bg); 
-            padding: 20px; border-radius: 24px; 
-            box-shadow: 0 10px 30px -5px rgba(0,0,0,0.1); 
+            padding: 24px; border-radius: 28px; 
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08); 
             margin-top: 10px; box-sizing: border-box;
         }
 
         /* Päis */
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .header h1 { font-size: 1.1rem; font-weight: 800; text-transform: uppercase; margin: 0; }
+        .header h1 { font-size: 1.2rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin: 0; }
         #clock { font-weight: 600; color: #64748b; font-variant-numeric: tabular-nums; }
 
         /* Nupud */
         .nav-tabs { 
-            display: flex; background: #f8fafc; padding: 4px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #e2e8f0;
+            display: flex; background: #f1f5f9; padding: 5px; border-radius: 14px; margin-bottom: 25px;
         }
         .nav-btn {
-            flex: 1; border: none; background: transparent; padding: 8px; border-radius: 8px;
-            font-weight: 600; color: #64748b; cursor: pointer; transition: all 0.2s; font-size: 0.9rem;
+            flex: 1; border: none; background: transparent; padding: 10px; border-radius: 10px;
+            font-weight: 600; color: #64748b; cursor: pointer; transition: all 0.2s; font-size: 0.95rem;
         }
-        .nav-btn.active { background: white; color: var(--text-main); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .nav-btn.active { background: white; color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
 
-        /* Hinna kast */
+        /* Peamine hinna kast */
         .price-card { 
-            padding: 30px 20px; border-radius: 20px; text-align: center;
-            margin-bottom: 20px; transition: all 0.3s ease;
+            padding: 35px 20px; border-radius: 24px; text-align: center;
+            margin-bottom: 15px; transition: all 0.3s ease;
             color: white; overflow: hidden; position: relative;
         }
-        .price-label { font-size: 0.85rem; font-weight: 600; opacity: 0.9; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
-        .price-value { font-size: 4rem; font-weight: 800; margin: 0; line-height: 1; letter-spacing: -1px; }
-        .unit { font-size: 1rem; font-weight: 600; opacity: 0.9; }
+        .price-label { font-size: 0.85rem; font-weight: 700; opacity: 0.9; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
+        .price-value { font-size: 4.2rem; font-weight: 800; margin: 0; line-height: 1; letter-spacing: -1px; }
+        .unit { font-size: 1.2rem; font-weight: 600; opacity: 0.9; }
         .status-badge { 
-            display: inline-block; padding: 5px 12px; border-radius: 15px; 
-            background: rgba(255,255,255,0.25); backdrop-filter: blur(4px);
-            font-weight: 700; font-size: 0.75rem; margin-top: 15px; 
+            display: inline-block; padding: 6px 14px; border-radius: 20px; 
+            background: rgba(255,255,255,0.2); backdrop-filter: blur(4px);
+            font-weight: 700; font-size: 0.8rem; margin-top: 15px; 
         }
+
+        /* Min/Max statistika */
+        .stats-row { display: flex; gap: 12px; margin-bottom: 25px; }
+        .stat-box { 
+            flex: 1; background: #f8fafc; padding: 15px; border-radius: 16px; 
+            text-align: center; border: 1px solid #e2e8f0;
+        }
+        .stat-label { font-size: 0.75rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-val { font-size: 1.4rem; font-weight: 800; margin-top: 4px; }
+        .text-green { color: #16a34a; }
+        .text-red { color: #dc2626; }
 
         /* Värvid */
         .theme-cheap { background: linear-gradient(135deg, #22c55e, #15803d); }
@@ -65,10 +76,10 @@
         .theme-neutral { background: linear-gradient(135deg, #64748b, #475569); }
 
         /* Graafik */
-        .chart-section { height: 300px; width: 100%; position: relative; }
+        .chart-section { height: 280px; width: 100%; position: relative; }
         
-        #loader { padding: 50px 0; text-align: center; color: #64748b; font-weight: 600; }
-        .footer { font-size: 0.7rem; color: #94a3b8; margin-top: 20px; text-align: center; }
+        #loader { padding: 60px 0; text-align: center; color: #64748b; font-weight: 600; }
+        .footer { font-size: 0.75rem; color: #94a3b8; margin-top: 25px; text-align: center; }
         .hidden { display: none; }
     </style>
 </head>
@@ -92,6 +103,17 @@
             <div id="display-label" class="price-label">Hetkehind</div>
             <div class="price-value"><span id="main-price">--</span><span class="unit">s/kWh</span></div>
             <div id="status-badge" class="status-badge">LAEN...</div>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-box">
+                <div class="stat-label">Päeva odavaim</div>
+                <div class="stat-val text-green"><span id="day-min">--</span> <small>s</small></div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Päeva kalleim</div>
+                <div class="stat-val text-red"><span id="day-max">--</span> <small>s</small></div>
+            </div>
         </div>
 
         <div class="chart-section">
@@ -173,17 +195,32 @@
 
         let data = currentView === 'today' ? globalData.today : globalData.tomorrow;
 
-        if (currentView === 'tomorrow' && data.length === 0) {
-            box.className = 'price-card theme-neutral';
-            display.innerText = "--";
-            badge.innerText = "OOTEL";
-            canvas.classList.add('hidden');
-            noData.classList.remove('hidden');
+        // Kontrollime, kas andmeid on (eriti homse jaoks)
+        if (data.length === 0) {
+            // Nulli andmed
+            document.getElementById('day-min').innerText = "--";
+            document.getElementById('day-max').innerText = "--";
+            
+            if (currentView === 'tomorrow') {
+                box.className = 'price-card theme-neutral';
+                display.innerText = "--";
+                badge.innerText = "OOTEL";
+                canvas.classList.add('hidden');
+                noData.classList.remove('hidden');
+            }
             return;
         }
 
         noData.classList.add('hidden');
         canvas.classList.remove('hidden');
+
+        // Arvuta MIN ja MAX
+        const prices = data.map(p => p.price);
+        const minPrice = Math.min(...prices);
+        const maxPrice = Math.max(...prices);
+        
+        document.getElementById('day-min').innerText = minPrice.toFixed(2);
+        document.getElementById('day-max').innerText = maxPrice.toFixed(2);
 
         let price = 0;
         let badgeText = "";
@@ -195,8 +232,8 @@
             document.getElementById('display-label').innerText = "HETKEHIND";
             badgeText = getStatusText(price);
         } else {
-            const sum = data.reduce((acc, curr) => acc + curr.price, 0);
-            price = (sum / data.length).toFixed(2);
+            const sum = prices.reduce((a, b) => a + b, 0);
+            price = (sum / prices.length).toFixed(2);
             document.getElementById('display-label').innerText = "HOMNE KESKMINE";
             badgeText = "PÄEVA KESKMINE";
         }
@@ -224,10 +261,7 @@
         const ctx = document.getElementById('priceChart').getContext('2d');
         if (chartInstance) chartInstance.destroy();
 
-        const labels = dataPoints.map(p => {
-            // Lisame nulli ette, kui tund on ühekohaline (nt 09:00)
-            return p.hour.toString().padStart(2, '0') + ":00";
-        });
+        const labels = dataPoints.map(p => p.hour.toString().padStart(2, '0') + ":00");
         const prices = dataPoints.map(p => p.price);
         const currentHour = new Date().getHours();
 
@@ -241,12 +275,12 @@
                     backgroundColor: (context) => {
                         const gradient = context.chart.ctx.createLinearGradient(0, 0, 0, 300);
                         const color = currentView === 'today' ? '37, 99, 235' : '147, 51, 234';
-                        gradient.addColorStop(0, `rgba(${color}, 0.2)`);
+                        gradient.addColorStop(0, `rgba(${color}, 0.25)`);
                         gradient.addColorStop(1, `rgba(${color}, 0)`);
                         return gradient;
                     },
                     fill: true,
-                    tension: 0.3,
+                    tension: 0.35,
                     pointRadius: (ctx) => (currentView === 'today' && dataPoints[ctx.dataIndex].hour === currentHour) ? 6 : 0,
                     pointBackgroundColor: '#ef4444',
                     borderWidth: 2
@@ -255,28 +289,21 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
+                plugins: { legend: { display: false }, tooltip: {
+                    callbacks: { label: (c) => ` ${c.raw} s/kWh` },
+                    backgroundColor: '#1e293b',
+                    padding: 10,
+                    cornerRadius: 8
+                }},
                 scales: {
                     x: { 
                         grid: { display: false }, 
-                        // Näitame kellaaegu tihedalt, aga väldime üksteise peale minekut
-                        ticks: { 
-                            maxTicksLimit: 12, // Näitab umbes iga 2 tunni tagant
-                            maxRotation: 0,
-                            autoSkip: true,
-                            font: { size: 10 },
-                            color: '#94a3b8'
-                        } 
+                        ticks: { maxTicksLimit: 8, maxRotation: 0, autoSkip: true, font: { size: 10 }, color: '#94a3b8' } 
                     },
                     y: { 
-                        display: true, // NÄITA VASAKUT TULPA
-                        position: 'left',
-                        grid: { color: '#f1f5f9' }, // Õrnad jooned taustal
-                        ticks: { 
-                            callback: function(value) { return value + ' s'; }, // Lisa 's' hindadele
-                            font: { size: 10, weight: 'bold' },
-                            color: '#64748b'
-                        }
+                        display: true, position: 'left',
+                        grid: { color: '#f1f5f9' },
+                        ticks: { callback: v => v + ' s', font: { size: 10, weight: '600' }, color: '#64748b' }
                     } 
                 },
                 interaction: { mode: 'index', intersect: false }
