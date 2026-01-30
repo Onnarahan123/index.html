@@ -3,238 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elektrihinna Jälgija + Kalkulaator</title>
+    <title>Elektrihinna Jälgija Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Üldine disain ja paigutus */
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 20px 10px; color: #333; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        h2 { text-align: center; margin-top: 0; color: #2c3e50; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f2f5; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
+        .container { max-width: 900px; width: 100%; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; }
         
-        /* Hetkehinna kasti stiilid */
-        .status-box { padding: 30px; border-radius: 15px; text-align: center; margin-bottom: 25px; color: white; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .price-large { font-size: 4em; font-weight: 800; line-height: 1; }
-        .unit-large { font-size: 0.5em; opacity: 0.8; }
-        .trend-text { font-weight: 600; margin-top: 10px; font-size: 1.1em; }
+        .status-box { padding: 25px; border-radius: 15px; margin-bottom: 20px; border: 1px solid rgba(0,0,0,0.05); }
+        .price-value { font-size: 3.5em; font-weight: 800; margin: 0; line-height: 1; }
+        .unit { font-size: 0.4em; color: #444; vertical-align: middle; }
         
-        /* Dünaamilised taustavärvid */
-        .bg-cheap { background: linear-gradient(135deg, #28a745, #85dcb0); } /* Roheline */
-        .bg-normal { background: linear-gradient(135deg, #fd7e14, #fce38a); color: #333; } /* Oranžikas */
-        .bg-expensive { background: linear-gradient(135deg, #dc3545, #f3a6b2); } /* Punane */
+        /* Dünaamilised värvid */
+        .cheap { background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); color: #1b4332; }
+        .normal { background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); color: #432818; }
+        .expensive { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #5a181b; }
 
-        /* Kalkulaatori sektsiooni stiilid */
-        .calculator-section { background: #f8f9fa; border: 2px solid #e9ecef; border-radius: 12px; padding: 20px; margin-bottom: 25px; }
-        .calc-title { margin: 0 0 15px 0; font-size: 1.2em; color: #495057; display: flex; align-items: center; }
-        .calc-input-group { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
-        .calc-input-group input { padding: 12px; border: 2px solid #ced4da; border-radius: 8px; font-size: 16px; width: 120px; text-align: center; transition: border-color 0.3s; }
-        .calc-input-group input:focus { border-color: #2563eb; outline: none; }
-        .calc-result { font-weight: bold; color: #2563eb; font-size: 1.1em; }
-        .small-info { font-size: 0.9em; color: #6c757d; margin-top: 5px; }
-
-        /* Graafiku konteiner */
-        .chart-container { position: relative; height: 400px; width: 100%; }
+        .chart-container { position: relative; height: 350px; width: 100%; margin-top: 20px; }
+        h2 { color: #1a202c; margin-bottom: 5px; }
+        p.info { color: #718096; font-size: 0.9em; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>Elektri börsihind</h2>
+    <p class="info" id="date-info">Laen andmeid...</p>
     
-    <div id="loading" style="text-align: center; padding: 20px;">Laen andmeid...</div>
-
-    <div id="main-content" style="display: none;">
-        <div id="status-card" class="status-box bg-normal">
-            <div class="price-large"><span id="current-price-display">0.00</span> <span class="unit-large">s/kWh</span></div>
-            <p class="trend-text" id="trend-text"></p>
-            <p style="margin: 5px 0 0 0; font-size: 0.9em; opacity: 0.9;">(Hind koos KM 22%)</p>
+    <div id="status-card" class="status-box">
+        <div id="loading">Uuendan andmeid...</div>
+        <div id="content" style="display:none;">
+            <div class="price-value"><span id="current-price">0.00</span> <span class="unit">s/kWh</span></div>
+            <p id="trend-text" style="font-weight: 600; margin-top: 10px;"></p>
         </div>
+    </div>
 
-         <div class="calculator-section">
-            <h3 class="calc-title">⚡ Hetkehinna kalkulaator</h3>
-            <div class="calc-input-group">
-                <label for="wattsInput">Seadme võimsus:</label>
-                <input type="number" id="wattsInput" placeholder="W" min="0" step="10">
-                <span>Vatti (W)</span>
-            </div>
-            <div id="calc-output">
-                Sisesta võimsus (nt 2000W pesumasina jaoks), et näha kulu.
-            </div>
-            <p class="small-info">Arvutus põhineb hetkehinnal: <span id="calc-price-ref">...</span> s/kWh.</p>
-        </div>
-
-        <h3>Tänased ja homsed hinnad</h3>
-        <div class="chart-container">
-            <canvas id="priceChart"></canvas>
-        </div>
+    <div class="chart-container">
+        <canvas id="priceChart"></canvas>
     </div>
 </div>
 
 <script>
-    // Global variables
-    let myChart = null;
-    let currentPriceGlobal = 0; // Hoiame hetkehinda siin kalkulaatori jaoks
+    let priceChart;
 
-    // Elemendid
-    const wattsInput = document.getElementById('wattsInput');
-    const calcOutput = document.getElementById('calc-output');
-    const calcPriceRef = document.getElementById('calc-price-ref');
-
-    // Kalkulaatori sündmus (arvutab kohe, kui number sisestatakse)
-    wattsInput.addEventListener('input', calculateCalculatedCost);
-
-    function calculateCalculatedCost() {
-        const watts = parseFloat(wattsInput.value);
-        if (isNaN(watts) || watts <= 0) {
-            calcOutput.innerHTML = "Sisesta positiivne võimsus vattides (W).";
-            return;
-        }
-
-        // Arvutuskäik: W -> kW * senti/kWh = senti/tund
-        const kilowatts = watts / 1000;
-        const costPerHourCents = kilowatts * currentPriceGlobal;
-        const costPerHourEuros = costPerHourCents / 100;
-
-        calcOutput.innerHTML = `Selle seadme kasutamine maksab praegu umbes <span class="calc-result">${costPerHourCents.toFixed(2)} senti tunnis</span> (€${costPerHourEuros.toFixed(3)}).`;
-    }
-
-
-    async function getDataAndUpdateUI() {
+    async function updateData() {
         try {
-            // Määrame ajavahemiku (täna algus -> ülehomme algus)
             const now = new Date();
+            // Küsime andmed alates tänase algusest kuni homse lõpuni
             const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
-            // Võtame 48h varuga, et kindlasti saada homsed andmed kui need olemas on
             const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2).toISOString();
-
+            
             const response = await fetch(`https://dashboard.elering.ee/api/nps/price?start=${start}&end=${end}`);
             const json = await response.json();
-            const data = json.data.ee;
+            const eeData = json.data.ee;
 
-            // Andmete ettevalmistamine graafiku jaoks
             const labels = [];
             const prices = [];
-            const backgroundColors = [];
-            const borderColors = [];
-            const borderWidths = [];
-            
-            const currentHourTimestamp = Math.floor(Date.now() / 1000 / 3600) * 3600;
+            const pointRadii = [];
+            const currentTimestamp = Math.floor(Date.now() / 1000 / 3600) * 3600;
 
-            data.forEach(item => {
+            let currentPrice = null;
+
+            eeData.forEach(item => {
                 const date = new Date(item.timestamp * 1000);
-                // Vormindame kellaaja "HH:00"
-                const hourLabel = date.getHours().toString().padStart(2, '0') + ":00";
-                const dayLabel = date.getDate() === now.getDate() ? "" : "(Homne) ";
-                labels.push(dayLabel + hourLabel);
+                const hour = date.getHours();
+                const day = date.getDate() === now.getDate() ? "Täna" : "Homme";
+                
+                labels.push(`${day} ${hour}:00`);
+                const priceKWh = (item.price / 10 * 1.22).toFixed(2);
+                prices.push(priceKWh);
 
-                // Arvutame hinna koos käibemaksuga (MWh -> kWh, +22%)
-                const finalPrice = (item.price / 10 * 1.22);
-                prices.push(finalPrice.toFixed(2));
-
-                // Värviloogika tulpadele
-                const isCheap = finalPrice < 10;
-                if (isCheap) {
-                    backgroundColors.push('rgba(34, 197, 94, 0.7)'); // Roheline
+                // Tuvastame hetkehinna
+                if (item.timestamp === currentTimestamp) {
+                    currentPrice = priceKWh;
+                    pointRadii.push(8); // Tee praegune tund graafikul suuremaks
                 } else {
-                    backgroundColors.push('rgba(59, 130, 246, 0.7)'); // Sinine
-                }
-
-                // Hetke tunni tuvastamine ja esiletõstmine
-                if (item.timestamp === currentHourTimestamp) {
-                    currentPriceGlobal = parseFloat(finalPrice.toFixed(2)); // Salvesta globaalselt
-                    borderColors.push('#dc3545'); // Punane äär
-                    borderWidths.push(3);
-                } else {
-                    borderColors.push('transparent');
-                    borderWidths.push(0);
+                    pointRadii.push(2);
                 }
             });
 
-            // Uuendame UI elemente
-            updateStatusCard(currentPriceGlobal);
-            drawChart(labels, prices, backgroundColors, borderColors, borderWidths);
-            
-            // Uuenda kalkulaatori referentshinda ja kui inputis on väärtus, arvuta uuesti
-            calcPriceRef.innerText = currentPriceGlobal.toFixed(2);
-            if (wattsInput.value) calculateCalculatedCost();
+            if (currentPrice === null && prices.length > 0) currentPrice = prices[0];
 
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('main-content').style.display = 'block';
-
+            displayUI(currentPrice, labels, prices, pointRadii);
+            document.getElementById('date-info').innerText = `Uuendatud: ${now.toLocaleTimeString('et-EE')}`;
         } catch (error) {
-            console.error("Viga andmete laadimisel:", error);
-            document.getElementById('loading').innerText = "Viga andmete laadimisel! Kontrolli ühendust.";
+            document.getElementById('loading').innerText = "Andmete viga. Proovi hiljem.";
+            console.error(error);
         }
     }
 
-    function updateStatusCard(price) {
-        document.getElementById('current-price-display').innerText = price.toFixed(2);
+    function displayUI(price, labels, prices, pointRadii) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('content').style.display = 'block';
+        document.getElementById('current-price').innerText = price;
+
         const card = document.getElementById('status-card');
         const trend = document.getElementById('trend-text');
-
-        card.className = 'status-box'; // Reset classes
+        
+        // Loogika värvide ja soovituste jaoks
         if (price < 10) {
-            card.classList.add('bg-cheap');
-            trend.innerText = "Hind on soodne! ✅";
-        } else if (price < 25) {
-             card.classList.add('bg-normal');
-             trend.innerText = "Hind on keskmine. ⚖️";
+            card.className = 'status-box cheap';
+            trend.innerText = "Nüüd on soodne aeg tarbida! ✅";
+        } else if (price < 20) {
+            card.className = 'status-box normal';
+            trend.innerText = "Hind on tavapärane. ⚖️";
         } else {
-            card.classList.add('bg-expensive');
-            trend.innerText = "Hind on kõrge! Lükka tarbimist edasi. ❌";
+            card.className = 'status-box expensive';
+            trend.innerText = "Hind on kallis. Hoia kokku! ❌";
         }
-    }
 
-    function drawChart(labels, data, bgColors, borderColors, borderWidths) {
         const ctx = document.getElementById('priceChart').getContext('2d');
         
-        // Kui graafik juba eksisteerib, hävitame vana enne uue loomist
-        if (myChart) myChart.destroy();
+        if (priceChart) priceChart.destroy(); // Hävitame vana graafiku uue laadimisel
 
-        myChart = new Chart(ctx, {
-            type: 'bar', // TULPDIAGRAMM
+        priceChart = new Chart(ctx, {
+            type: 'line',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Hind (s/kWh)',
-                    data: data,
-                    backgroundColor: bgColors,
-                    borderColor: borderColors,
-                    borderWidth: borderWidths,
-                    borderRadius: 4, // Ümarad nurgad tulpadel
-                    barPercentage: 0.9, // Tulpade laius
+                    label: 's/kWh',
+                    data: prices,
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: pointRadii,
+                    pointBackgroundColor: pointRadii.map(r => r === 8 ? '#ff0000' : '#2563eb'),
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false }, // Peidame legendi
-                    tooltip: {
-                        callbacks: {
-                            label: (context) => `Hind: ${context.raw} s/kWh`
-                        }
-                    }
+                    legend: { display: false },
+                    tooltip: { mode: 'index', intersect: false }
                 },
                 scales: {
-                    y: {
+                    y: { 
                         beginAtZero: true,
-                        title: { display: true, text: 'senti / kWh' },
-                        grid: { color: '#e9ecef' }
+                        ticks: { callback: value => value + ' s' }
                     },
                     x: {
-                        grid: { display: false }, // Peidame vertikaalsed jooned puhtama vaate jaoks
-                        ticks: { maxRotation: 45, autoSkip: true, maxTicksLimit: 24 }
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45,
+                            autoSkip: true,
+                            maxTicksLimit: 12
+                        }
                     }
                 }
             }
         });
     }
 
-    // Käivita rakendus
-    getDataAndUpdateUI();
-    // Uuenda andmeid automaatselt iga 10 minuti tagant
-    setInterval(getDataAndUpdateUI, 600000);
-
+    updateData();
+    // Uuenda andmeid automaatselt iga 15 minuti järel
+    setInterval(updateData, 15 * 60 * 1000);
 </script>
+
 </body>
 </html>
