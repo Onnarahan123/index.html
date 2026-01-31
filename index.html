@@ -10,7 +10,7 @@
     <style>
         /* APPLE STYLE & CLEAN DESIGN */
         :root {
-            --card-bg: rgba(255, 255, 255, 0.85); /* Poolläbipaistev klaasjas */
+            --card-bg: rgba(255, 255, 255, 0.85);
             --text-primary: #000000;
             --text-secondary: #8E8E93;
             --apple-green: #34C759;
@@ -21,9 +21,9 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            /* UUS TAUST: Minimalistlik gradient */
-            background: linear-gradient(180deg, #E0F2F1 0%, #F2F2F7 40%, #F2F2F7 100%);
-            background-attachment: fixed; /* Taust ei liigu kerides */
+            /* UUS TAUST: Sügavam gradient */
+            background: linear-gradient(180deg, #CFD9DF 0%, #E2EBF0 40%, #F2F2F7 100%);
+            background-attachment: fixed;
             margin: 0;
             padding: 20px;
             color: var(--text-primary);
@@ -43,23 +43,24 @@
         /* KAARDID */
         .card {
             background: var(--card-bg);
-            backdrop-filter: blur(20px); /* Apple'i "Frosty glass" efekt */
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px); /* Tugevam blur efekt */
+            -webkit-backdrop-filter: blur(25px);
             border-radius: 20px;
             padding: 24px;
             margin-bottom: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
-            border: 1px solid rgba(255,255,255,0.4);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+            border: 1px solid rgba(255,255,255,0.5);
         }
 
         .card-mini {
             background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border-radius: 16px;
             padding: 16px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            border: 1px solid rgba(255,255,255,0.5);
         }
 
         h2 {
@@ -104,7 +105,6 @@
         /* HETKEHIND */
         .price-display { text-align: center; padding: 5px 0; }
         
-        /* UUS: Kellaaeg hetkehinna kohal */
         .time-range-badge {
             font-size: 15px;
             font-weight: 500;
@@ -157,7 +157,6 @@
         <div id="price-content" style="display:none;">
             <div class="price-display">
                 <span class="time-range-badge" id="current-time-range">--:--</span>
-                
                 <span class="big-price" id="current-price">--</span>
                 <span class="unit">senti / kWh</span>
                 <div id="status-badge" class="status-badge" style="background: #ccc;">...</div>
@@ -263,20 +262,16 @@
                 btnTomorrow.innerText = "Homme";
             }
 
-            // --- HETKEHINNA LEIDMINE ---
             const currentTs = Math.floor(Date.now() / 1000 / 3600) * 3600;
             const currentItem = fullData.find(d => Math.abs(d.timestamp - currentTs) < 600) || fullData[fullData.length-1];
             currentPrice = parseFloat(((currentItem.price / 10) * 1.22).toFixed(2));
 
-            // --- KELLAAJA KUVAMINE ---
             const dateObj = new Date(currentItem.timestamp * 1000);
             const curHour = dateObj.getHours();
             const nextHour = (curHour + 1) % 24;
-            // Vormindame 14:00 - 15:00
             const timeString = `${curHour.toString().padStart(2, '0')}:00 – ${nextHour.toString().padStart(2, '0')}:00`;
             document.getElementById('current-time-range').innerText = timeString;
 
-            // --- VISUAALI UUENDAMINE ---
             document.getElementById('current-price').innerText = currentPrice.toFixed(2);
             const badge = document.getElementById('status-badge');
             
@@ -326,7 +321,7 @@
         const labels = [];
         const dataPoints = [];
         const bgColors = [];
-        const pointData = []; // UUS: Andmed punkti jaoks
+        const pointData = [];
 
         const currentHour = now.getHours();
 
@@ -339,52 +334,48 @@
             price = parseFloat(price.toFixed(2));
             dataPoints.push(price);
 
-            // Värvid
             let color = '#007AFF';
             if (price < 10) color = '#34C759';
             else if (price >= 20) color = '#FF3B30';
             else if (price >= 10) color = '#FF9500';
             
-            // Tulpade värvimine
             bgColors.push(color);
 
-            // PUNKTI LOOGIKA
-            // Kui on tänane päev ja see on praegune tund, lisame punkti andmed
             if (viewState === 'today' && hour === currentHour) {
-                pointData.push(price); // Punkt täpselt tulba tippu
+                pointData.push(price);
             } else {
-                pointData.push(null); // Mujale punkti ei pane
+                pointData.push(null);
             }
         });
 
         if (myChart) myChart.destroy();
 
         myChart = new Chart(ctx, {
-            type: 'bar', // Põhitüüp on tulpdiagramm
+            type: 'bar',
             data: {
                 labels: labels,
                 datasets: [
                     {
-                        // Andmestik 1: Tulbad
                         label: 'Hind',
                         data: dataPoints,
                         backgroundColor: bgColors,
                         borderRadius: 4,
-                        barPercentage: 0.7,
+                        // UUS: Kitsamad tulbad ja rohkem vahet
+                        barPercentage: 0.5, 
+                        categoryPercentage: 1.0,
                         order: 2
                     },
                     {
-                        // Andmestik 2: PUNKT (Scatter/Line tüüpi kiht tulpade peal)
                         type: 'line',
                         label: 'Hetkel',
                         data: pointData,
-                        borderColor: '#FF3B30', /* Apple Red */
+                        borderColor: '#FF3B30',
                         backgroundColor: '#FF3B30',
-                        pointRadius: 6, /* Punkti suurus */
+                        pointRadius: 6,
                         pointHoverRadius: 8,
-                        borderWidth: 0, /* Joont ennast ei näita, ainult punkti */
-                        showLine: false, /* Peidame ühendusjooned */
-                        order: 1 /* Joonistame tulpade peale */
+                        borderWidth: 0,
+                        showLine: false,
+                        order: 1
                     }
                 ]
             },
@@ -403,7 +394,7 @@
                         padding: 10,
                         displayColors: false,
                         callbacks: {
-                            title: (ctx) => `Kell ${ctx[0].label}:00`,
+                            title: (ctx) => `Kell ${ctx[0].label}:00 – ${parseInt(ctx[0].label)+1}:00`,
                             label: (ctx) => `${ctx.raw} s/kWh`
                         }
                     }
@@ -411,6 +402,7 @@
                 scales: {
                     x: {
                         grid: { display: false },
+                        // Näitame silte harvemini, et ei tekiks segadust
                         ticks: { maxTicksLimit: 8, color: '#8E8E93' }
                     },
                     y: {
