@@ -10,8 +10,7 @@
     <style>
         /* APPLE STYLE & CLEAN DESIGN */
         :root {
-            --bg-color: #F2F2F7;
-            --card-bg: #FFFFFF;
+            --card-bg: rgba(255, 255, 255, 0.85); /* Poolläbipaistev klaasjas */
             --text-primary: #000000;
             --text-secondary: #8E8E93;
             --apple-green: #34C759;
@@ -22,7 +21,9 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
+            /* UUS TAUST: Minimalistlik gradient */
+            background: linear-gradient(180deg, #E0F2F1 0%, #F2F2F7 40%, #F2F2F7 100%);
+            background-attachment: fixed; /* Taust ei liigu kerides */
             margin: 0;
             padding: 20px;
             color: var(--text-primary);
@@ -42,35 +43,39 @@
         /* KAARDID */
         .card {
             background: var(--card-bg);
+            backdrop-filter: blur(20px); /* Apple'i "Frosty glass" efekt */
+            -webkit-backdrop-filter: blur(20px);
             border-radius: 20px;
             padding: 24px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+            border: 1px solid rgba(255,255,255,0.4);
         }
 
-        /* Väiksem kaart kalkulaatorile */
         .card-mini {
             background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-radius: 16px;
             padding: 16px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
         }
 
         h2 {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
-            margin: 0 0 15px 0;
+            margin: 0 0 10px 0;
             color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
             text-align: center;
         }
 
         /* TABID (Täna / Homme) */
         .segmented-control {
             display: flex;
-            background: #E5E5EA; /* Apple hall taust */
+            background: rgba(118, 118, 128, 0.12);
             padding: 2px;
             border-radius: 9px;
             margin-bottom: 20px;
@@ -91,26 +96,35 @@
 
         .segment-btn.active {
             background: #FFFFFF;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.12);
         }
         
-        .segment-btn:disabled {
-            color: #aaa;
-            cursor: not-allowed;
-        }
+        .segment-btn:disabled { color: #aaa; cursor: not-allowed; }
 
         /* HETKEHIND */
-        .price-display { text-align: center; padding: 10px 0; }
-        .big-price {
-            font-size: 72px;
-            font-weight: 700;
-            letter-spacing: -2px;
-            line-height: 1;
+        .price-display { text-align: center; padding: 5px 0; }
+        
+        /* UUS: Kellaaeg hetkehinna kohal */
+        .time-range-badge {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
             display: block;
         }
+
+        .big-price {
+            font-size: 76px;
+            font-weight: 700;
+            letter-spacing: -3px;
+            line-height: 1;
+            display: block;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
         .unit { font-size: 16px; font-weight: 500; color: var(--text-secondary); margin-top: 5px; display: block; }
+        
         .status-badge {
-            display: inline-block; margin-top: 10px; padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; color: white;
+            display: inline-block; margin-top: 12px; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; color: white;
         }
 
         /* GRAAFIK */
@@ -121,13 +135,13 @@
             display: flex; align-items: center; justify-content: space-between; font-size: 14px;
         }
         .calc-input {
-            border: none; background: #F2F2F7; padding: 8px; border-radius: 8px;
-            font-size: 16px; font-weight: 600; width: 80px; text-align: center; outline: none; color: var(--apple-blue);
+            border: none; background: rgba(118, 118, 128, 0.12); padding: 8px; border-radius: 8px;
+            font-size: 17px; font-weight: 600; width: 80px; text-align: center; outline: none; color: var(--apple-blue);
         }
         .calc-res-text { font-size: 13px; color: var(--text-secondary); margin-top: 8px; text-align: right; }
 
         /* JALUS */
-        .footer { text-align: center; font-size: 11px; color: #C7C7CC; margin-top: 30px; font-weight: 500; }
+        .footer { text-align: center; font-size: 11px; color: #aaa; margin-top: 30px; font-weight: 500; }
         
         #loading-overlay { font-size: 14px; color: var(--text-secondary); text-align: center; margin: 20px 0; }
     </style>
@@ -138,10 +152,12 @@
     
     <div class="card">
         <h2>Hetkel</h2>
-        <div id="loading-overlay">Laen andmeid...</div>
+        <div id="loading-overlay">Andmete laadimine...</div>
         
         <div id="price-content" style="display:none;">
             <div class="price-display">
+                <span class="time-range-badge" id="current-time-range">--:--</span>
+                
                 <span class="big-price" id="current-price">--</span>
                 <span class="unit">senti / kWh</span>
                 <div id="status-badge" class="status-badge" style="background: #ccc;">...</div>
@@ -160,7 +176,7 @@
         </div>
         
         <div style="text-align: center; margin-top:10px;">
-            <button onclick="initApp()" style="background:none; border:none; color:var(--apple-blue); font-size:12px;">↻ Värskenda</button>
+            <button onclick="initApp()" style="background:none; border:none; color:var(--apple-blue); font-size:12px;">↻ Värskenda andmeid</button>
         </div>
     </div>
 
@@ -171,7 +187,7 @@
                 <input type="number" id="watts" value="1000" class="calc-input"> <span style="font-size:12px; color:#888;">W</span>
             </div>
         </div>
-        <div class="calc-res-text" id="calc-result">Sisesta võimsus...</div>
+        <div class="calc-res-text" id="calc-result">...</div>
     </div>
 
     <div class="footer">
@@ -182,10 +198,9 @@
 <script>
     let myChart = null;
     let currentPrice = 0;
-    let fullData = []; // Hoiame kõiki andmeid siin
-    let viewState = 'today'; // 'today' või 'tomorrow'
+    let fullData = [];
+    let viewState = 'today'; 
 
-    // Automaatne uuendus
     document.addEventListener("visibilitychange", function() {
         if (!document.hidden) initApp();
     });
@@ -197,15 +212,13 @@
         const w = parseFloat(wattsInput.value) || 0;
         const cost = (w / 1000) * currentPrice;
         document.getElementById('calc-result').innerHTML = 
-            `Kulu hetkehinnaga: <b>${cost.toFixed(2)} senti</b> / tund`;
+            `Kulu hetkehinnaga: <b style="color:var(--text-primary)">${cost.toFixed(2)} s</b> / tunnis`;
     }
 
     function switchView(view) {
         viewState = view;
-        // Uuenda nuppude stiile
         document.getElementById('btn-today').className = view === 'today' ? 'segment-btn active' : 'segment-btn';
         document.getElementById('btn-tomorrow').className = view === 'tomorrow' ? 'segment-btn active' : 'segment-btn';
-        
         renderChart();
     }
 
@@ -220,14 +233,12 @@
 
             let eeData = [];
 
-            // 1. Proovime OTSE
             try {
                 const resp = await fetch(`https://dashboard.elering.ee/api/nps/price?start=${start}&end=${end}`);
                 if (!resp.ok) throw new Error();
                 const json = await resp.json();
                 eeData = json.data.ee;
             } catch (e) {
-                // 2. Proovime PROXY
                 console.log("Kasutan proxyt...");
                 const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://dashboard.elering.ee/api/nps/price?start=${start}&end=${end}`)}`;
                 const resp = await fetch(proxyUrl);
@@ -237,9 +248,8 @@
 
             if (!eeData || eeData.length === 0) throw new Error("Andmeid pole");
 
-            fullData = eeData; // Salvestame globaalselt
+            fullData = eeData;
             
-            // Kontrollime, kas homseid andmeid on
             const tomorrowDate = new Date();
             tomorrowDate.setDate(tomorrowDate.getDate() + 1);
             const hasTomorrow = fullData.some(d => new Date(d.timestamp*1000).getDate() === tomorrowDate.getDate());
@@ -247,39 +257,49 @@
             const btnTomorrow = document.getElementById('btn-tomorrow');
             if (!hasTomorrow) {
                 btnTomorrow.disabled = true;
-                btnTomorrow.innerText = "Homme (pole veel)";
+                btnTomorrow.innerText = "Homme (ootel)";
             } else {
                 btnTomorrow.disabled = false;
                 btnTomorrow.innerText = "Homme";
             }
 
-            // Leiame hetkehinna
+            // --- HETKEHINNA LEIDMINE ---
             const currentTs = Math.floor(Date.now() / 1000 / 3600) * 3600;
             const currentItem = fullData.find(d => Math.abs(d.timestamp - currentTs) < 600) || fullData[fullData.length-1];
             currentPrice = parseFloat(((currentItem.price / 10) * 1.22).toFixed(2));
 
-            // Uuenda suurt numbrit
+            // --- KELLAAJA KUVAMINE ---
+            const dateObj = new Date(currentItem.timestamp * 1000);
+            const curHour = dateObj.getHours();
+            const nextHour = (curHour + 1) % 24;
+            // Vormindame 14:00 - 15:00
+            const timeString = `${curHour.toString().padStart(2, '0')}:00 – ${nextHour.toString().padStart(2, '0')}:00`;
+            document.getElementById('current-time-range').innerText = timeString;
+
+            // --- VISUAALI UUENDAMINE ---
             document.getElementById('current-price').innerText = currentPrice.toFixed(2);
             const badge = document.getElementById('status-badge');
             
+            let colorClass = '#007AFF';
             if (currentPrice < 10) {
-                document.getElementById('current-price').style.color = 'var(--apple-green)';
-                badge.style.background = 'var(--apple-green)';
-                badge.innerText = "Soodne";
+                colorClass = 'var(--apple-green)';
+                badge.style.background = colorClass;
+                badge.innerText = "Soodne aeg ✅";
             } else if (currentPrice < 20) {
-                document.getElementById('current-price').style.color = 'var(--apple-orange)';
-                badge.style.background = 'var(--apple-orange)';
-                badge.innerText = "Keskmine";
+                colorClass = 'var(--apple-orange)';
+                badge.style.background = colorClass;
+                badge.innerText = "Tavaline hind ⚖️";
             } else {
-                document.getElementById('current-price').style.color = 'var(--apple-red)';
-                badge.style.background = 'var(--apple-red)';
-                badge.innerText = "Kallis";
+                colorClass = 'var(--apple-red)';
+                badge.style.background = colorClass;
+                badge.innerText = "Kallis! ⛔";
             }
+            document.getElementById('current-price').style.color = colorClass;
 
             loading.style.display = 'none';
             content.style.display = 'block';
             updateCalculator();
-            renderChart(); // Joonista graafik vastavalt valitud vaatele (today/tomorrow)
+            renderChart();
 
         } catch (error) {
             console.error(error);
@@ -298,7 +318,6 @@
             targetDate.setDate(targetDate.getDate() + 1);
         }
 
-        // Filtreerime andmed valitud päeva järgi
         const filteredData = fullData.filter(d => {
             const dDate = new Date(d.timestamp * 1000);
             return dDate.getDate() === targetDate.getDate();
@@ -307,12 +326,14 @@
         const labels = [];
         const dataPoints = [];
         const bgColors = [];
+        const pointData = []; // UUS: Andmed punkti jaoks
+
         const currentHour = now.getHours();
 
         filteredData.forEach(item => {
             const date = new Date(item.timestamp * 1000);
             const hour = date.getHours();
-            labels.push(hour); // Ainult number teljele
+            labels.push(hour);
 
             let price = (item.price / 10) * 1.22;
             price = parseFloat(price.toFixed(2));
@@ -324,33 +345,63 @@
             else if (price >= 20) color = '#FF3B30';
             else if (price >= 10) color = '#FF9500';
             
-            // Kui on tänane päev ja praegune tund, teeme tumedamaks/erilisemaks
+            // Tulpade värvimine
+            bgColors.push(color);
+
+            // PUNKTI LOOGIKA
+            // Kui on tänane päev ja see on praegune tund, lisame punkti andmed
             if (viewState === 'today' && hour === currentHour) {
-                bgColors.push(color); 
+                pointData.push(price); // Punkt täpselt tulba tippu
             } else {
-                bgColors.push(color); // Võib teha läbipaistvamaks kui tahad ('rgba...')
+                pointData.push(null); // Mujale punkti ei pane
             }
         });
 
         if (myChart) myChart.destroy();
 
         myChart = new Chart(ctx, {
-            type: 'bar',
+            type: 'bar', // Põhitüüp on tulpdiagramm
             data: {
                 labels: labels,
-                datasets: [{
-                    data: dataPoints,
-                    backgroundColor: bgColors,
-                    borderRadius: 4,
-                    barPercentage: 0.6
-                }]
+                datasets: [
+                    {
+                        // Andmestik 1: Tulbad
+                        label: 'Hind',
+                        data: dataPoints,
+                        backgroundColor: bgColors,
+                        borderRadius: 4,
+                        barPercentage: 0.7,
+                        order: 2
+                    },
+                    {
+                        // Andmestik 2: PUNKT (Scatter/Line tüüpi kiht tulpade peal)
+                        type: 'line',
+                        label: 'Hetkel',
+                        data: pointData,
+                        borderColor: '#FF3B30', /* Apple Red */
+                        backgroundColor: '#FF3B30',
+                        pointRadius: 6, /* Punkti suurus */
+                        pointHoverRadius: 8,
+                        borderWidth: 0, /* Joont ennast ei näita, ainult punkti */
+                        showLine: false, /* Peidame ühendusjooned */
+                        order: 1 /* Joonistame tulpade peale */
+                    }
+                ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                animation: { duration: 500 },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        titleColor: '#000',
+                        bodyColor: '#000',
+                        borderColor: '#ddd',
+                        borderWidth: 1,
+                        padding: 10,
+                        displayColors: false,
                         callbacks: {
                             title: (ctx) => `Kell ${ctx[0].label}:00`,
                             label: (ctx) => `${ctx.raw} s/kWh`
@@ -365,7 +416,7 @@
                     y: {
                         title: { 
                             display: true, 
-                            text: 's / kWh', // Sinu soovitud tulba märge
+                            text: 's / kWh', 
                             color: '#8E8E93',
                             font: { size: 10, weight: 'bold' }
                         }, 
