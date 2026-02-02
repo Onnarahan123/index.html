@@ -11,19 +11,18 @@
     <style>
         /* APPLE STYLE & CLEAN DESIGN */
         :root {
-            --card-bg: rgba(255, 255, 255, 0.9);
-            --text-primary: #000000;
-            --text-secondary: #8E8E93;
-            --apple-green: #34C759;
-            --apple-blue: #007AFF;
-            --apple-red: #FF3B30;
-            --apple-orange: #FF9500;
+            --bg-grad-start: #f5f5f7;
+            --bg-grad-end: #ffffff;
+            --card-bg: #ffffff;
+            --text-primary: #1c1c1e;
+            --text-secondary: #8e8e93;
+            --enefit-green: #4caf50; /* Enefitile sarnane roheline */
+            --highlight-green: rgba(76, 175, 80, 0.2);
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(180deg, #dceefc 0%, #f0f4f8 100%);
-            background-attachment: fixed;
+            background: linear-gradient(180deg, var(--bg-grad-start) 0%, var(--bg-grad-end) 100%);
             margin: 0;
             padding: 20px;
             color: var(--text-primary);
@@ -40,107 +39,84 @@
             padding-bottom: 50px;
         }
 
-        /* UUS: HOIATUSRIBA */
-        #alert-banner {
-            display: none;
-            width: 100%;
-            padding: 12px 15px;
-            margin-bottom: 20px;
-            border-radius: 16px;
-            font-weight: 600;
-            font-size: 14px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            animation: slideDown 0.5s ease;
-        }
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         /* KAARDID */
         .card {
             background: var(--card-bg);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border-radius: 24px;
+            border-radius: 20px;
             padding: 24px;
             margin-bottom: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-            border: 1px solid rgba(255,255,255,0.7);
-            transition: all 0.5s ease;
-            position: relative;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.05);
         }
-
-        /* Värvilised taustad */
-        .bg-cheap { background: linear-gradient(135deg, rgba(212,237,218,0.95), rgba(235,249,238,0.95)) !important; border-color: #c3e6cb !important; }
-        .bg-medium { background: linear-gradient(135deg, rgba(219,234,254,0.95), rgba(239,246,255,0.95)) !important; border-color: #bfdbfe !important; }
-        .bg-expensive { background: linear-gradient(135deg, rgba(248,215,218,0.95), rgba(254,242,242,0.95)) !important; border-color: #f5c6cb !important; }
 
         .card-mini {
             background: var(--card-bg);
-            backdrop-filter: blur(25px);
-            border-radius: 18px;
+            border-radius: 16px;
             padding: 18px;
             margin-bottom: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-            border: 1px solid rgba(255,255,255,0.6);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.05);
         }
 
-        h2 { font-size: 13px; font-weight: 700; margin: 0 0 15px 0; color: rgba(0,0,0,0.4); text-transform: uppercase; letter-spacing: 1.2px; text-align: center; }
+        h2 { font-size: 13px; font-weight: 700; margin: 0 0 15px 0; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; text-align: center; }
 
-        /* HETKEHIND */
-        .current-price-section { text-align: center; padding-bottom: 20px; border-bottom: 1px solid rgba(0,0,0,0.08); margin-bottom: 15px; }
-        .time-range-badge { font-size: 15px; font-weight: 500; color: rgba(0,0,0,0.6); margin-bottom: 2px; }
-        .big-price { font-size: 82px; font-weight: 800; letter-spacing: -4px; line-height: 1; display: block; color: #1c1c1e; }
-        .unit { font-size: 16px; font-weight: 500; color: rgba(0,0,0,0.5); margin-top: 5px; display: block; }
-        
-        .recommendation-box { text-align: center; font-size: 14px; color: var(--apple-blue); font-weight: 600; background: rgba(0, 122, 255, 0.1); padding: 10px; border-radius: 12px; margin-bottom: 15px; }
+        /* HETKEHIND (Enefit stiilis suur roheline number) */
+        .current-price-section { text-align: center; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0; margin-bottom: 15px; }
+        .price-label { font-size: 16px; color: var(--text-primary); font-weight: 500; margin-bottom: 5px; }
+        .big-price { font-size: 64px; font-weight: 700; letter-spacing: -2px; line-height: 1; display: block; color: var(--enefit-green); }
+        .unit { font-size: 18px; font-weight: 600; color: var(--enefit-green); margin-top: 5px; display: block; }
+        .tax-note { font-size: 12px; color: var(--text-secondary); margin-top: 5px; }
 
-        .stats-row { display: flex; justify-content: space-between; padding: 0 5px; }
+        /* STATISTIKA */
+        .stats-row { display: flex; justify-content: space-between; padding: 0 10px; }
         .stat-item { text-align: center; flex: 1; }
-        .stat-label { font-size: 10px; text-transform: uppercase; color: rgba(0,0,0,0.5); font-weight: 700; margin-bottom: 4px; display: block; }
-        .stat-value { font-size: 17px; font-weight: 700; color: #1c1c1e; }
+        .stat-label { font-size: 11px; text-transform: uppercase; color: var(--text-secondary); font-weight: 600; margin-bottom: 4px; display: block; }
+        .stat-value { font-size: 16px; font-weight: 700; color: var(--text-primary); }
 
         /* ILM */
         .weather-row { display: flex; justify-content: space-between; align-items: flex-start; }
         .weather-day { text-align: center; flex: 1; padding: 0 4px; }
         .w-title { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; display: block; }
-        .w-icon { font-size: 28px; display: block; margin: 4px 0; }
-        .w-temp { font-size: 14px; font-weight: 700; color: var(--text-primary); display: block; }
+        .w-icon { font-size: 24px; display: block; margin: 4px 0; }
+        .w-temp { font-size: 13px; font-weight: 700; display: block; }
         .w-wind { font-size: 11px; color: var(--text-secondary); margin-top: 2px; display: block; }
-        .w-divider { width: 1px; background: rgba(0,0,0,0.1); height: 50px; margin: 10px 0; }
+        .w-divider { width: 1px; background: #eee; height: 50px; margin: 10px 0; }
 
         /* GRAAFIK */
-        .segmented-control { display: flex; background: rgba(118, 118, 128, 0.12); padding: 2px; border-radius: 9px; margin-bottom: 20px; }
-        .segment-btn { flex: 1; border: none; padding: 6px 0; border-radius: 7px; font-size: 13px; font-weight: 600; background: transparent; color: #000; cursor: pointer; transition: all 0.2s ease; }
-        .segment-btn.active { background: #FFFFFF; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-        .chart-wrapper { position: relative; height: 300px; width: 100%; }
+        .segmented-control { display: flex; background: #f0f0f5; padding: 3px; border-radius: 10px; margin-bottom: 20px; }
+        .segment-btn { flex: 1; border: none; padding: 8px 0; border-radius: 8px; font-size: 13px; font-weight: 600; background: transparent; color: #666; cursor: pointer; transition: all 0.2s ease; }
+        .segment-btn.active { background: #FFFFFF; color: #000; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .chart-wrapper { position: relative; height: 320px; width: 100%; }
 
-        /* INFO TEADE (KUI ANDMEID POLE) */
+        /* TEADE (ANDMED PUUDUVAD) */
         #no-data-msg {
             display: none;
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 80%;
+            width: 90%;
             text-align: center;
-            color: var(--text-secondary);
+            background: rgba(255,255,255,0.9);
+            padding: 20px;
+            border-radius: 15px;
         }
         .no-data-icon { font-size: 40px; margin-bottom: 10px; display: block; }
-        .no-data-text { font-size: 16px; font-weight: 500; }
-        .no-data-sub { font-size: 13px; opacity: 0.7; margin-top: 5px; }
+        .no-data-text { font-size: 16px; font-weight: 600; color: #333; }
+        .no-data-sub { font-size: 14px; color: #888; margin-top: 5px; line-height: 1.4; }
 
         /* KALKULAATOR */
         .presets-grid { display: flex; gap: 8px; margin-bottom: 15px; justify-content: center; }
-        .preset-btn { background: #fff; border: 1px solid #e5e5ea; border-radius: 12px; padding: 8px 12px; font-size: 20px; cursor: pointer; flex: 1; transition: transform 0.1s; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
-        .preset-btn:active { transform: scale(0.95); background: #f2f2f7; }
+        .preset-btn { background: #f9f9f9; border: 1px solid #eee; border-radius: 12px; padding: 10px; font-size: 20px; cursor: pointer; flex: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .preset-btn:active { background: #eee; }
         .calc-row { display: flex; align-items: center; justify-content: space-between; font-size: 15px; font-weight: 500; }
-        .calc-input { border: none; background: rgba(118, 118, 128, 0.12); padding: 10px; border-radius: 10px; font-size: 18px; font-weight: 600; width: 90px; text-align: center; outline: none; color: var(--apple-blue); }
+        .calc-input { border: 1px solid #ddd; background: #fff; padding: 8px; border-radius: 8px; font-size: 16px; font-weight: 600; width: 80px; text-align: center; outline: none; color: #333; }
 
-        .footer { text-align: center; font-size: 11px; color: #aaa; margin-top: 30px; font-weight: 500; }
-        #loading-overlay { font-size: 14px; color: var(--text-secondary); text-align: center; margin: 20px 0; }
+        .footer { text-align: center; font-size: 11px; color: #bbb; margin-top: 30px; }
+        #loading-overlay { font-size: 14px; color: #888; text-align: center; margin: 20px 0; }
+        
+        /* HOIATUSRIBA */
+        #alert-banner { display: none; width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 12px; font-size: 13px; font-weight: 600; text-align: center; }
     </style>
 </head>
 <body>
@@ -150,14 +126,14 @@
     <div id="alert-banner"></div>
 
     <div class="card" id="main-card">
-        <h2>Hetkehind</h2>
         <div id="loading-overlay">Laen andmeid...</div>
         
         <div id="price-content" style="display:none;">
             <div class="current-price-section">
-                <span class="time-range-badge" id="current-time-range">--:--</span>
+                <div class="price-label">Elektri börsihind hetkel</div>
                 <span class="big-price" id="current-price">--</span>
-                <span class="unit">senti / kWh (KM 24%)</span>
+                <span class="unit">senti / kWh</span>
+                <div class="tax-note">Hind koos käibemaksuga (24%)</div>
             </div>
             <div class="stats-row">
                 <div class="stat-item">
@@ -177,8 +153,7 @@
     </div>
 
     <div class="card-mini">
-        <div id="recommendation" class="recommendation-box" style="display:none;"></div>
-        <h2 style="margin-bottom:12px; margin-top:5px;">Ilm (Võru)</h2>
+        <h2 style="margin-bottom:12px; margin-top:5px; text-align:left;">Ilm (Võru)</h2>
         <div class="weather-row" id="weather-container">
             <div style="width:100%; text-align:center; color:#888; font-size:13px;">Laen ilmainfot...</div>
         </div>
@@ -196,12 +171,12 @@
             <div id="no-data-msg">
                 <span class="no-data-icon">⏳</span>
                 <div class="no-data-text">Andmed puuduvad</div>
-                <div class="no-data-sub">Homsed hinnad avalikustatakse<br>orienteeruvalt kell 14:00</div>
+                <div class="no-data-sub">Nord Pooli homsed hinnad avalikustatakse<br>tavaliselt kell <b>14:00</b>.</div>
             </div>
         </div>
         
         <div style="text-align: center; margin-top:10px;">
-            <button onclick="initApp()" style="background:none; border:none; color:var(--apple-blue); font-size:12px; font-weight:500;">↻ Värskenda</button>
+            <button onclick="initApp()" style="background:none; border:none; color:#4caf50; font-size:12px; font-weight:600;">↻ Värskenda</button>
         </div>
     </div>
 
@@ -211,15 +186,15 @@
             <button class="preset-btn" onclick="setWatts(10, 'LED Lamp')">💡</button>
             <button class="preset-btn" onclick="setWatts(2000, 'Pesumasin')">🧺</button>
             <button class="preset-btn" onclick="setWatts(6000, 'Saun')">🧖‍♂️</button>
-            <button class="preset-btn" onclick="setWatts(11000, 'Auto laadija')">🚗</button>
+            <button class="preset-btn" onclick="setWatts(11000, 'Auto')">🚗</button>
         </div>
         <div class="calc-row">
-            <span id="device-name">Seadme võimsus:</span>
+            <span id="device-name">Võimsus:</span>
             <div>
-                <input type="number" id="watts" value="2000" class="calc-input"> <span style="font-size:12px; color:#888;">W</span>
+                <input type="number" id="watts" value="2000" class="calc-input"> <span style="font-size:14px; color:#666;">W</span>
             </div>
         </div>
-        <div style="font-size: 15px; font-weight:600; color: var(--text-primary); margin-top: 12px; text-align: right; border-top:1px solid #eee; padding-top:10px;" id="calc-result">...</div>
+        <div style="font-size: 15px; font-weight:600; color: var(--text-primary); margin-top: 15px; text-align: right; border-top:1px solid #eee; padding-top:10px;" id="calc-result">...</div>
     </div>
 
     <div class="footer">Made by Ranno</div>
@@ -230,7 +205,7 @@
     let currentPrice = 0;
     let fullData = [];
     let viewState = 'today'; 
-    const KM_MULTIPLIER = 1.24; // KM 24%
+    const KM_MULTIPLIER = 1.24; // 24% KM
 
     document.addEventListener("visibilitychange", function() {
         if (!document.hidden) initApp();
@@ -261,10 +236,11 @@
         document.getElementById('btn-today').className = view === 'today' ? 'segment-btn active' : 'segment-btn';
         document.getElementById('btn-tomorrow').className = view === 'tomorrow' ? 'segment-btn active' : 'segment-btn';
         
-        // Kontrollime, kas andmeid on
+        // Kontrollime andmete olemasolu
         const targetDate = new Date();
         if (viewState === 'tomorrow') targetDate.setDate(targetDate.getDate() + 1);
         
+        // Filtreeri andmed kuupäeva järgi, et kontrollida kas on midagi näidata
         const hasData = fullData.some(d => new Date(d.timestamp * 1000).getDate() === targetDate.getDate());
         
         const chartCanvas = document.getElementById('priceChart');
@@ -295,11 +271,13 @@
 
             let eeData = [];
             try {
+                // Elering API
                 const resp = await fetch(`https://dashboard.elering.ee/api/nps/price?start=${start}&end=${end}`);
                 if (!resp.ok) throw new Error();
                 const json = await resp.json();
                 eeData = json.data.ee;
             } catch (e) {
+                // Proxy
                 console.log("Kasutan proxyt...");
                 const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://dashboard.elering.ee/api/nps/price?start=${start}&end=${end}`)}`;
                 const resp = await fetch(proxyUrl);
@@ -315,32 +293,21 @@
             const currentItem = fullData.find(d => Math.abs(d.timestamp - currentTs) < 600) || fullData[fullData.length-1];
             currentPrice = parseFloat(((currentItem.price / 10) * KM_MULTIPLIER).toFixed(2));
 
-            const dateObj = new Date(currentItem.timestamp * 1000);
-            const curHour = dateObj.getHours();
-            const nextHour = (curHour + 1) % 24;
-            document.getElementById('current-time-range').innerText = `${curHour.toString().padStart(2,'0')}:00 – ${nextHour.toString().padStart(2,'0')}:00`;
-            document.getElementById('current-price').innerText = currentPrice.toFixed(2);
-
-            // --- VÄRVID ---
-            const mainCard = document.getElementById('main-card');
-            mainCard.classList.remove('bg-cheap', 'bg-medium', 'bg-expensive');
+            // Värvi suur hind roheliseks kui odav, punaseks kui kallis
+            const priceEl = document.getElementById('current-price');
+            priceEl.innerText = currentPrice.toFixed(2).replace('.', ',');
             
-            if (currentPrice <= 5) {
-                mainCard.classList.add('bg-cheap');
+            // Hoiatusriba
+            if (currentPrice > 25) {
                 alertBanner.style.display = 'block';
-                alertBanner.style.background = '#d4edda';
-                alertBanner.style.color = '#155724';
-                alertBanner.innerHTML = "🌟 Super hind! Pane pesumasin ja saun tööle!";
-            } else if (currentPrice < 15) {
-                mainCard.classList.add('bg-cheap');
-            } else if (currentPrice < 25) {
-                mainCard.classList.add('bg-medium');
-            } else {
-                mainCard.classList.add('bg-expensive');
+                alertBanner.style.background = '#ffebee';
+                alertBanner.style.color = '#c62828';
+                alertBanner.innerText = "Hind on hetkel kõrge!";
+            } else if (currentPrice < 5) {
                 alertBanner.style.display = 'block';
-                alertBanner.style.background = '#f8d7da';
-                alertBanner.style.color = '#721c24';
-                alertBanner.innerHTML = "⚠️ Tähelepanu! Elekter on hetkel kallis.";
+                alertBanner.style.background = '#e8f5e9';
+                alertBanner.style.color = '#2e7d32';
+                alertBanner.innerText = "Hind on väga soodne!";
             }
 
             // --- STATISTIKA ---
@@ -355,30 +322,17 @@
                 document.getElementById('day-min').innerText = min.toFixed(2);
                 document.getElementById('day-max').innerText = max.toFixed(2);
                 document.getElementById('day-avg').innerText = avg.toFixed(2);
-                
-                const currentHourVal = new Date().getHours();
-                const futureItems = todayItems.filter(d => new Date(d.timestamp * 1000).getHours() >= currentHourVal);
-                if (futureItems.length > 0) {
-                    futureItems.sort((a, b) => a.price - b.price);
-                    const bestItem = futureItems[0];
-                    const bestPrice = ((bestItem.price / 10) * KM_MULTIPLIER).toFixed(2);
-                    const bestTime = new Date(bestItem.timestamp * 1000).getHours();
-                    
-                    const recBox = document.getElementById('recommendation');
-                    recBox.style.display = 'block';
-                    if (bestTime === currentHourVal) {
-                        recBox.innerHTML = `🌟 Praegu ongi parim aeg tarbimiseks!`;
-                    } else {
-                        recBox.innerHTML = `💡 Soovitus: Oota kella <b>${bestTime}:00</b>-ni (${bestPrice} s/kWh).`;
-                    }
-                }
             }
 
+            // Homsed nupud
+            const tomorrowDate = new Date();
+            tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+            const hasTomorrow = fullData.some(d => new Date(d.timestamp*1000).getDate() === tomorrowDate.getDate());
+            
             loading.style.display = 'none';
             content.style.display = 'block';
             updateCalculator();
-            // Kutsume välja switchView, et see otsustaks, kas näidata graafikut või teadet
-            switchView('today'); 
+            switchView('today');
 
         } catch (error) {
             console.error(error);
@@ -420,74 +374,99 @@
         const labels = []; const dataPoints = [];
         const currentHour = now.getHours();
 
+        // Arvuta päeva max hind, et teada kui kõrge highlight teha
+        let maxPrice = 0;
+
         filteredData.forEach(item => {
             const date = new Date(item.timestamp * 1000);
-            labels.push(date.getHours());
-            dataPoints.push(parseFloat(((item.price / 10) * KM_MULTIPLIER).toFixed(2)));
+            labels.push(date.getHours().toString().padStart(2, '0'));
+            const p = parseFloat(((item.price / 10) * KM_MULTIPLIER).toFixed(2));
+            if(p > maxPrice) maxPrice = p;
+            dataPoints.push(p);
+        });
+
+        // Highlight tulp (vertikaalne riba)
+        const highlightData = labels.map((label, index) => {
+            // Kui on täna ja praegune tund, siis pane väärtus (veidi kõrgem kui max, et ulatuks üles)
+            if (viewState === 'today' && parseInt(label) === currentHour) {
+                return maxPrice + 5; 
+            }
+            return null;
         });
 
         if (myChart) myChart.destroy();
 
-        // ÜMARATE JA HAJUVATE TULPADE LOOMINE
-        const gradientCheap = ctx.createLinearGradient(0, 0, 0, 400);
-        gradientCheap.addColorStop(0, '#34C759'); gradientCheap.addColorStop(1, 'rgba(52, 199, 89, 0.2)');
-        
-        const gradientMedium = ctx.createLinearGradient(0, 0, 0, 400);
-        gradientMedium.addColorStop(0, '#007AFF'); gradientMedium.addColorStop(1, 'rgba(0, 122, 255, 0.2)');
-
-        const gradientExpensive = ctx.createLinearGradient(0, 0, 0, 400);
-        gradientExpensive.addColorStop(0, '#FF3B30'); gradientExpensive.addColorStop(1, 'rgba(255, 59, 48, 0.2)');
-
-        const bgColors = dataPoints.map(p => {
-            if (p < 10) return gradientCheap;
-            if (p > 20) return gradientExpensive;
-            return gradientMedium;
-        });
-
         myChart = new Chart(ctx, {
-            type: 'bar',
+            type: 'line',
             data: {
                 labels: labels,
-                datasets: [{
-                    label: 'Hind',
-                    data: dataPoints,
-                    backgroundColor: bgColors,
-                    borderRadius: 8, // Ümarad nurgad
-                    borderSkipped: false, // Ümarus ka all
-                    barPercentage: 0.6, // Tulba laius
-                    categoryPercentage: 0.8
-                }]
+                datasets: [
+                    {
+                        // TAUSTA ESITLETÕST (TULP)
+                        type: 'bar',
+                        label: 'Praegu',
+                        data: highlightData,
+                        backgroundColor: 'rgba(76, 175, 80, 0.15)', // Õrn roheline riba
+                        barPercentage: 1.0,
+                        categoryPercentage: 1.0,
+                        borderWidth: 0,
+                        order: 2 // Joonista taha
+                    },
+                    {
+                        // HINNA JOON (ASTMELINE)
+                        type: 'line',
+                        label: 'Hind',
+                        data: dataPoints,
+                        borderColor: '#4caf50', // Enefit Roheline
+                        borderWidth: 2,
+                        stepped: true, // TEKITAB KANDILISE JOONE
+                        pointRadius: (ctx) => {
+                            // Näita täppi AINULT praeguse tunni alguses
+                            if (viewState === 'today' && ctx.dataIndex === currentHour) return 5;
+                            return 0;
+                        },
+                        pointBackgroundColor: '#4caf50',
+                        fill: false,
+                        order: 1 // Joonista ette
+                    }
+                ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: { duration: 500 },
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        enabled: true,
+                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
                         titleColor: '#000',
                         bodyColor: '#000',
                         borderColor: '#ddd',
                         borderWidth: 1,
-                        padding: 10,
-                        displayColors: false,
                         callbacks: {
-                            title: (ctx) => `Kell ${ctx[0].label}:00`,
-                            label: (ctx) => `${ctx.raw} s/kWh`
+                            label: (ctx) => {
+                                if(ctx.dataset.type === 'bar') return ''; // Ära näita tulba infot
+                                return `${ctx.raw} s/kWh`;
+                            }
                         }
                     }
                 },
                 scales: {
                     x: {
                         grid: { display: false },
-                        ticks: { maxTicksLimit: 8, color: '#8E8E93' }
+                        ticks: { 
+                            maxTicksLimit: 12, // Näita iga teist tundi (00, 02, 04...)
+                            color: '#8e8e93' 
+                        }
                     },
                     y: {
-                        title: { display: true, text: 's / kWh', color: '#8E8E93', font: { size: 10, weight: 'bold' } },
                         beginAtZero: true,
-                        grid: { color: '#E5E5EA', borderDash: [5, 5] },
-                        ticks: { color: '#8E8E93' }
+                        grid: { color: '#f0f0f5' },
+                        ticks: { color: '#8e8e93' }
                     }
                 }
             }
