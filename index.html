@@ -14,7 +14,7 @@
 
     <style>
         :root {
-            --primary: #4CAF50; /* Puhas roheline */
+            --primary: #4CAF50;
             --bg: #f4f6f8;
             --card: #ffffff;
             --text: #1d1d1f;
@@ -37,12 +37,43 @@
 
         .container { width: 100%; max-width: 500px; padding-bottom: 80px; }
 
+        /* --- CARD --- */
         .card {
             background: var(--card);
             border-radius: 22px;
             padding: 20px;
             margin-bottom: 16px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            position: relative;
+            overflow: hidden; 
+            transition: all 0.5s ease;
+        }
+
+        /* --- EFEKTID (LIVE ANIMATSIOONID) --- */
+        
+        /* 1. AURORA (ODAV) */
+        .effect-aurora {
+            background: linear-gradient(120deg, #ffffff, #e8f5e9, #c8e6c9, #ffffff);
+            background-size: 300% 300%;
+            animation: aurora-move 8s ease infinite;
+            border: 1px solid #4CAF50;
+        }
+        @keyframes aurora-move {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 2. PULSE (KALLIS) */
+        .effect-pulse {
+            background: #fff;
+            animation: pulse-red 4s infinite;
+            border: 1px solid #ffcdd2;
+        }
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.4); border-color: #ffcdd2; }
+            50% { box-shadow: 0 0 0 10px rgba(255, 59, 48, 0); border-color: #ef5350; }
+            100% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0); border-color: #ffcdd2; }
         }
 
         h2 { 
@@ -50,19 +81,19 @@
             color: var(--muted); margin: 0 0 12px 0; letter-spacing: 0.8px; 
         }
 
-        /* 1. HERO (ALATI ROHELINE) */
+        /* HERO */
         .hero { text-align: center; padding-bottom: 15px; }
         .hero-time { 
-            background: #e8f5e9; color: var(--primary); 
+            background: rgba(0,0,0,0.05); color: #444; 
             padding: 4px 12px; border-radius: 20px; 
             font-size: 13px; font-weight: 600; display: inline-block; margin-bottom: 5px;
         }
-        .hero-price { font-size: 72px; font-weight: 800; line-height: 1; letter-spacing: -2px; color: var(--primary); }
+        .hero-price { font-size: 72px; font-weight: 800; line-height: 1; letter-spacing: -2px; color: var(--primary); transition: color 0.3s; }
         .hero-unit { font-size: 16px; color: var(--muted); font-weight: 500; margin-top: 5px; }
 
         /* VÕRDLUS */
         .compare-grid { display: flex; gap: 10px; margin-top: 20px; }
-        .comp-box { flex: 1; background: #f9f9f9; padding: 12px; border-radius: 14px; text-align: center; }
+        .comp-box { flex: 1; background: rgba(255,255,255,0.7); padding: 12px; border-radius: 14px; text-align: center; border: 1px solid rgba(0,0,0,0.05); }
         .comp-title { font-size: 11px; color: var(--muted); text-transform: uppercase; font-weight: 600; }
         .comp-val { font-size: 18px; font-weight: 700; margin-top: 4px; display: block; }
         .diff-tag { font-size: 12px; font-weight: 700; padding: 2px 6px; border-radius: 6px; margin-top: 4px; display: inline-block; }
@@ -74,12 +105,11 @@
         .chart-box { height: 320px; width: 100%; position: relative; }
         .toggle-day { background: #eee; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; color: #555; cursor: pointer; }
 
-        /* TOP/FLOP LISTID */
+        /* LISTID */
         .list-row { display: flex; gap: 15px; }
         .list-col { flex: 1; }
         .list-header { font-size: 12px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
         .item-row { display: flex; justify-content: space-between; font-size: 13px; padding: 6px 0; border-bottom: 1px solid #f0f0f0; }
-        .item-row:last-child { border-bottom: none; }
         .price-good { color: var(--primary); font-weight: 600; }
         .price-bad { color: var(--danger); font-weight: 600; }
 
@@ -100,14 +130,13 @@
         #loader { text-align: center; color: var(--muted); padding: 40px; }
         .hidden { display: none !important; }
         .last-update { text-align: center; color: #ccc; font-size: 10px; margin-top: 5px; }
-        
     </style>
 </head>
 <body>
 
 <div class="container">
 
-    <div class="card hero">
+    <div class="card hero" id="hero-card">
         <div id="loader">Laen andmeid...</div>
         <div id="main-content" class="hidden">
             <div id="current-time" class="hero-time">--:--</div>
@@ -145,14 +174,14 @@
     </div>
 
     <div class="card">
-        <h2>Soodsamad ja kalleimad</h2>
+        <h2>Soodne ja Kallis</h2>
         <div class="list-row">
             <div class="list-col">
-                <div class="list-header" style="color:var(--primary)">🟢 Soodsamad</div>
+                <div class="list-header" style="color:var(--primary)">🟢 Soodne</div>
                 <div id="list-cheap"></div>
             </div>
             <div class="list-col">
-                <div class="list-header" style="color:var(--danger)">🔴 Kalleimad</div>
+                <div class="list-header" style="color:var(--danger)">🔴 Kallis</div>
                 <div id="list-expensive"></div>
             </div>
         </div>
@@ -180,56 +209,51 @@
         <div style="text-align:right; margin-top:10px; font-size:15px; font-weight:600;" id="calc-result">...</div>
     </div>
 
+    <div class="card">
+        <h2>Teavitused</h2>
+        <div style="font-size:13px; color:#666; margin-bottom:10px;">
+            Teavita, kui hind on odav (< 5s) või kui homme on kallim.
+        </div>
+        <button id="btn-notify" class="notify-btn" onclick="toggleNotify()">Luba teavitused</button>
+    </div>
+
     <div class="last-update" id="last-update-text"></div>
     <div style="text-align:center; color:#ccc; font-size:11px; margin-top:5px; margin-bottom:20px;">
-        Made by Ranno • v3.3 Forced Refresh
+        Made by Ranno • v3.4 Live Effects
     </div>
 
 </div>
 
 <script>
     const VAT = 1.24; 
+    const LOW_PRICE = 5; 
+    const HIGH_PRICE = 15; // Piir, kust algab "Kallis" (punane efekt)
+
     let appData = { today: [], tomorrow: [], currentPrice: 0 };
     let chartInstance = null;
+    let notifyEnabled = false;
     let lastLoadedHour = -1;
 
     document.addEventListener("DOMContentLoaded", () => {
         init();
+        if (Notification.permission === "granted") { notifyEnabled = true; updateNotifyBtn(); }
         
-        // --- SUNDVÄRSKENDUS ---
-        // Iga kord kui leht muutub nähtavaks (tuled teisest äpist)
-        document.addEventListener("visibilitychange", () => {
-            if (document.visibilityState === "visible") {
-                checkAndReload();
-            }
-        });
-
-        // Või kui teed telefonis "Pull to refresh" (kui äpp lubab)
+        document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") checkAndReload(); });
         window.addEventListener("focus", checkAndReload);
-
-        // Iga minut kontrolli taustal
         setInterval(checkAndReload, 60000);
     });
 
     function checkAndReload() {
         const currentHour = new Date().getHours();
-        // Kui tund on vahetunud võrreldes viimase laadimisega
-        if (lastLoadedHour !== -1 && currentHour !== lastLoadedHour) {
-            // FORCE RELOAD: Lae terve leht uuesti, et saada värske kood ja andmed
-            window.location.reload(); 
-        } else {
-            // Lihtsalt uuenda andmeid taustal
-            getElectricity();
-        }
+        if (lastLoadedHour !== -1 && currentHour !== lastLoadedHour) window.location.reload(); 
+        else getElectricity(); // Taustavärskendus
     }
 
     async function init() {
         await Promise.all([getElectricity(), getWeather()]);
         lastLoadedHour = new Date().getHours();
-        
         const now = new Date();
-        const timeStr = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
-        document.getElementById('last-update-text').innerText = "Viimati kontrollitud: " + timeStr;
+        document.getElementById('last-update-text').innerText = "Viimati kontrollitud: " + now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
     }
 
     async function getElectricity() {
@@ -238,12 +262,10 @@
         const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2).toISOString();
         const apiURL = `https://dashboard.elering.ee/api/nps/price?start=${start}&end=${end}`;
 
-        // Kasutame 'corsproxy.io', see on stabiilsem
         const proxy1 = `https://corsproxy.io/?${encodeURIComponent(apiURL)}`;
         const proxy2 = `https://api.allorigins.win/raw?url=${encodeURIComponent(apiURL)}`;
 
         let rawData = null;
-
         try {
             const r = await fetch(proxy1);
             if(r.ok) { const j = await r.json(); rawData = j.data.ee; } else throw new Error();
@@ -252,11 +274,10 @@
                 const r2 = await fetch(proxy2);
                 if(r2.ok) { const j2 = await r2.json(); rawData = j2.data.ee; }
             } catch (e2) {
-                document.getElementById('loader').innerText = "Viga ühenduses!";
+                document.getElementById('loader').innerText = "Viga ühenduses.";
                 return;
             }
         }
-
         if(rawData) processElectricity(rawData);
     }
 
@@ -279,16 +300,35 @@
     function updateHero() {
         const nowTs = Math.floor(Date.now()/1000/3600)*3600;
         const curr = appData.today.find(d => d.timestamp === nowTs);
+        const card = document.getElementById('hero-card');
+        const priceEl = document.getElementById('current-price');
         
+        // Eemalda vanad efektid
+        card.classList.remove('effect-aurora', 'effect-pulse');
+
         if(curr) {
             const price = (curr.price / 10 * VAT);
             appData.currentPrice = price;
-            document.getElementById('current-price').innerText = price.toFixed(2);
+            priceEl.innerText = price.toFixed(2);
             
             const d = new Date(curr.timestamp*1000);
             const h = d.getHours().toString().padStart(2,'0');
             const hNext = (d.getHours()+1).toString().padStart(2,'0');
             document.getElementById('current-time').innerText = `${h}:00 – ${hNext}:00`;
+
+            // RAKENDA EFEKTID
+            if(price < LOW_PRICE) {
+                // AURORA (Odav)
+                card.classList.add('effect-aurora');
+                priceEl.style.color = '#2E7D32'; 
+            } else if (price > HIGH_PRICE) {
+                // PULSE (Kallis)
+                card.classList.add('effect-pulse');
+                priceEl.style.color = '#D32F2F'; 
+            } else {
+                // Tavaline
+                priceEl.style.color = '#1d1d1f';
+            }
         }
 
         const avgToday = getAvg(appData.today);
@@ -351,10 +391,10 @@
         const labels = data.map(d => new Date(d.timestamp*1000).getHours());
         const values = data.map(d => parseFloat((d.price/10*VAT).toFixed(2)));
         const avg = parseFloat(getAvg(data));
+        const currentHour = new Date().getHours();
 
         if(chartInstance) chartInstance.destroy();
 
-        // ÜLENI ROHELINE GRAAFIK
         const gradient = ctx.createLinearGradient(0, 0, 0, 400);
         gradient.addColorStop(0, 'rgba(76, 175, 80, 0.4)');
         gradient.addColorStop(1, 'rgba(76, 175, 80, 0.0)');
@@ -366,12 +406,19 @@
                 datasets: [{
                     label: 'Hind',
                     data: values,
-                    borderColor: '#4CAF50', // Enefit Roheline Joon ALATI
+                    borderColor: '#4CAF50',
                     backgroundColor: gradient,
                     borderWidth: 2,
-                    stepped: true, // Astmeline
+                    stepped: true,
                     fill: true,
-                    pointRadius: 0,
+                    // PUNKT AINULT PRAEGUSEL TUNNIL
+                    pointRadius: (ctx) => {
+                        if(mode === 'today' && ctx.dataIndex === currentHour) return 6;
+                        return 0;
+                    },
+                    pointBackgroundColor: '#4CAF50',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
                     pointHoverRadius: 6,
                 }]
             },
@@ -391,16 +438,16 @@
                     },
                     tooltip: {
                         callbacks: {
-                            label: (c) => {
-                                const diff = ((c.raw - avg)/avg*100).toFixed(0);
-                                const sign = diff > 0 ? "+" : "";
-                                return [`Hind: ${c.raw} s/kWh`, `Vs keskmine: ${sign}${diff}%`];
-                            }
+                            label: (c) => `Hind: ${c.raw} s/kWh`
                         }
                     }
                 },
                 scales: {
-                    x: { grid: { display:false } },
+                    x: { 
+                        grid: { display:false },
+                        // NÄITA KÕIKI TUNDE 00..23
+                        ticks: { maxTicksLimit: 25, autoSkip: false, font: {size: 10} }
+                    },
                     y: { beginAtZero: true, grid: { color: '#f0f0f0' } }
                 }
             }
@@ -438,6 +485,17 @@
             const cost = (w/1000 * price).toFixed(2);
             document.getElementById('calc-result').innerHTML = `Kulu hetkel: <span style="color:var(--primary)">${cost} senti</span> / tund`;
         }
+    }
+
+    function toggleNotify() {
+        if (!("Notification" in window)) return alert("Brauser ei toeta seda.");
+        Notification.requestPermission().then(p => {
+            if(p === "granted") { notifyEnabled = true; updateNotifyBtn(); }
+        });
+    }
+    function updateNotifyBtn() {
+        const b = document.getElementById('btn-notify');
+        if(notifyEnabled) { b.innerText = "Teavitused aktiivsed ✅"; b.classList.add('active'); }
     }
 </script>
 </body>
