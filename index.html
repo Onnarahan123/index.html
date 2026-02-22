@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nutikas Elekter v14</title>
+    <title>Nutikas Elekter v15</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,12 +15,14 @@
     <style>
         /* --- TEEMAD --- */
         :root {
-            --primary: #4CAF50; /* Enefit Green */
+            --primary: #4CAF50;
             --bg: #F5F7FA;
             --card: #ffffff;
             --text: #1d1d1f;
             --subtext: #86868b;
             --danger: #FF3B30;
+            --warning: #FF9500;
+            --gold: #FFD700;
             --border: rgba(0,0,0,0.06);
             --modal-bg: rgba(255,255,255,0.98);
             --chart-grid: #E5E5EA;
@@ -46,6 +48,11 @@
             --info-box-bg: #2C2C2E;
         }
 
+        body.solar-mode {
+            --primary: #FFD700; 
+            --danger: #4CAF50;  
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg);
@@ -67,7 +74,7 @@
         .app-title { font-weight: 800; font-size: 20px; color: var(--text); letter-spacing: -0.5px; }
         .settings-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--subtext); }
 
-        /* CARD BASE */
+        /* CARD */
         .card {
             background: var(--card);
             border-radius: 24px;
@@ -79,33 +86,36 @@
             border: 1px solid var(--border);
         }
 
-        /* LIVE HERO EFFECTS */
-        .effect-aurora {
-            background: linear-gradient(135deg, var(--card) 0%, rgba(76, 175, 80, 0.1) 100%);
-            border: 1px solid var(--primary);
-        }
-        .effect-pulse {
-            background: linear-gradient(135deg, var(--card) 0%, rgba(255, 59, 48, 0.1) 100%);
-            border: 1px solid var(--danger);
-            animation: pulse-border 3s infinite;
-        }
+        .effect-aurora { border: 1px solid var(--primary); background: linear-gradient(135deg, var(--card) 0%, rgba(76, 175, 80, 0.1) 100%); }
+        .effect-pulse { border: 1px solid var(--danger); background: linear-gradient(135deg, var(--card) 0%, rgba(255, 59, 48, 0.1) 100%); animation: pulse-border 3s infinite; }
         @keyframes pulse-border { 0% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.2); } 50% { box-shadow: 0 0 0 6px rgba(255, 59, 48, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0); } }
 
-        /* HERO TYPOGRAPHY */
+        /* HERO */
         .hero { text-align: center; padding-bottom: 15px; }
         .hero-time { font-size: 13px; font-weight: 600; color: var(--subtext); margin-bottom: 4px; }
         .hero-price { font-size: 64px; font-weight: 800; line-height: 1; letter-spacing: -3px; color: var(--text); }
         .hero-unit { font-size: 15px; color: var(--subtext); font-weight: 500; margin-top: 6px; }
         .hero-badge { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--subtext); margin-bottom: 5px; display: block; font-weight: 700; }
         
+        /* GURU & SPEAKER */
+        .guru-wrapper { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 15px; }
         .guru-bubble {
-            background: var(--guru-bg); border-radius: 16px; padding: 10px 15px; margin-top: 15px;
+            background: var(--guru-bg); border-radius: 16px; padding: 10px 15px;
             font-size: 14px; font-weight: 600; color: var(--text); display: inline-block; line-height: 1.4;
-            max-width: 90%; animation: popIn 0.5s ease;
+            max-width: 80%; animation: popIn 0.5s ease; text-align: left;
         }
         @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        
+        .speaker-btn {
+            background: rgba(142, 142, 147, 0.15); border: none; border-radius: 50%;
+            width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+            font-size: 18px; cursor: pointer; transition: 0.2s; color: var(--text);
+        }
+        .speaker-btn:active { transform: scale(0.9); }
+        .speaker-btn.speaking { background: var(--warning); color: white; animation: pulse-speaker 1.5s infinite; }
+        @keyframes pulse-speaker { 0% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 149, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 149, 0, 0); } }
 
-        /* ÜHENDATUD ÜLEVAADE */
+        /* ÜLEVAADE */
         .clock-weather-wrapper { display: flex; flex-direction: column; align-items: center; gap: 20px; }
         .clock-container { position: relative; width: 200px; height: 200px; }
         #clock-canvas { width: 100%; height: 100%; transform: rotate(-90deg); }
@@ -114,19 +124,27 @@
         .clock-val { font-size: 26px; font-weight: 700; color: var(--text); letter-spacing: -1px; line-height: 1; margin-top: 2px; }
         .clock-unit { font-size: 12px; color: var(--subtext); font-weight: 500; margin-top: 2px; }
 
-        /* ILMARIBA (UUENDATUD JÄRJEKORD: LABEL -> ICON -> VAL) */
         .weather-mini-row { display: flex; width: 100%; justify-content: space-around; padding-top: 15px; border-top: 1px solid var(--border); }
         .wm-item { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2px; }
         .wm-lbl { font-size: 10px; color: var(--subtext); text-transform: uppercase; font-weight: 700; margin-bottom: 2px; }
         .wm-icon { font-size: 18px; margin-bottom: 2px; }
         .wm-val { font-size: 14px; font-weight: 700; color: var(--text); }
 
+        /* SOLAR */
+        .solar-card { text-align: center; }
+        .solar-input-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; background: var(--appliance-bg); padding: 10px; border-radius: 12px; }
+        .solar-input { width: 60px; padding: 5px; border-radius: 6px; border: 1px solid #ccc; text-align: center; font-weight: 700; font-size: 16px; }
+        .solar-stats { display: flex; gap: 10px; }
+        .solar-stat-box { flex: 1; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 12px; padding: 10px; }
+        .solar-val { font-size: 18px; font-weight: 800; color: var(--text); }
+        .solar-lbl { font-size: 10px; text-transform: uppercase; color: var(--subtext); font-weight: 700; margin-top: 2px; }
+
         /* GRAAFIK */
         .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .chart-box { height: 260px; width: 100%; position: relative; }
         .toggle-day { background: rgba(142, 142, 147, 0.15); border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--text); cursor: pointer; }
 
-        /* KODUMASINATE MAATRIKS */
+        /* KODUMASINAD */
         .appliance-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
         .app-item { 
             background: var(--appliance-bg); padding: 12px; border-radius: 16px; 
@@ -134,11 +152,11 @@
             position: relative; cursor: pointer; transition: 0.2s; border: 2px solid transparent;
         }
         .app-item:active { transform: scale(0.98); }
-        .app-item.selected { border-color: var(--primary); background: rgba(76, 175, 80, 0.05); }
+        .app-item.selected { border-color: #4CAF50; background: rgba(76, 175, 80, 0.05); }
         .app-icon { font-size: 24px; margin-bottom: 5px; }
         .app-name { font-size: 11px; font-weight: 600; color: var(--subtext); text-transform: uppercase; margin-bottom: 2px; }
         .app-cost { font-size: 16px; font-weight: 700; color: var(--text); }
-        .app-best { font-size: 10px; color: var(--primary); margin-top: 2px; font-weight: 600; }
+        .app-best { font-size: 10px; color: #4CAF50; margin-top: 2px; font-weight: 600; }
         .app-badge-expensive { color: var(--danger); }
 
         #app-info-box {
@@ -148,29 +166,18 @@
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         .info-title { font-weight: 700; display: block; margin-bottom: 4px; }
         
-        /* TARK LAADIJA */
+        /* LAADIJA */
         .charger-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
         .slider-container { width: 100%; margin-bottom: 20px; }
         input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
-        /* ROHELINE NUPP (FORCE GREEN) */
         input[type=range]::-webkit-slider-thumb { 
-            -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; 
-            background: #4CAF50 !important; /* ALATI ROHELINE */
-            border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3); margin-top: -10px; cursor: pointer;
+            -webkit-appearance: none; height: 26px; width: 26px; border-radius: 50%; 
+            background: #4CAF50 !important; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3); margin-top: -11px; cursor: pointer;
         }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; background: var(--slider-track); border-radius: 2px; }
         .charge-result { text-align: center; padding: 15px; background: rgba(76, 175, 80, 0.08); border-radius: 16px; border: 1px solid rgba(76, 175, 80, 0.2); }
-        .charge-time { font-size: 18px; font-weight: 700; color: var(--primary); display: block; margin-bottom: 2px; }
+        .charge-time { font-size: 18px; font-weight: 700; color: #4CAF50; display: block; margin-bottom: 2px; }
         .charge-saving { font-size: 12px; color: var(--subtext); }
-
-        /* PÄIKESEPARGI KAST */
-        .solar-card { text-align: center; }
-        .solar-input-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; background: var(--appliance-bg); padding: 10px; border-radius: 12px; }
-        .solar-input { width: 60px; padding: 5px; border-radius: 6px; border: 1px solid #ccc; text-align: center; font-weight: 700; font-size: 16px; }
-        .solar-stats { display: flex; gap: 10px; }
-        .solar-stat-box { flex: 1; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 12px; padding: 10px; }
-        .solar-val { font-size: 18px; font-weight: 800; color: var(--text); }
-        .solar-lbl { font-size: 10px; text-transform: uppercase; color: var(--subtext); font-weight: 700; margin-top: 2px; }
 
         h2 { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--subtext); margin: 0 0 15px 0; letter-spacing: 1px; }
         .hidden { display: none !important; }
@@ -189,9 +196,8 @@
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
         .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider { background-color: #4CAF50; }
         input:checked + .slider:before { transform: translateX(22px); }
-
     </style>
 </head>
 <body>
@@ -210,7 +216,11 @@
             <div id="current-time" class="hero-time">--:--</div>
             <div id="current-price" class="hero-price">--</div>
             <div class="hero-unit">senti / kWh (KM <span id="vat-display">24</span>%)</div>
-            <div class="guru-bubble" id="guru-text">...</div>
+            
+            <div class="guru-wrapper">
+                <div class="guru-bubble" id="guru-text">...</div>
+                <button id="guru-speaker-btn" class="speaker-btn" onclick="playGuruAudio()">🔊</button>
+            </div>
         </div>
     </div>
 
@@ -239,14 +249,8 @@
             <input type="number" id="solar-capacity" class="solar-input" value="10" onchange="updateSolarCalc()">
         </div>
         <div class="solar-stats">
-            <div class="solar-stat-box">
-                <div class="solar-val" id="solar-prod">0 kW</div>
-                <div class="solar-lbl">Tootlikkus</div>
-            </div>
-            <div class="solar-stat-box">
-                <div class="solar-val" id="solar-profit">0 €/h</div>
-                <div class="solar-lbl">Väärtus</div>
-            </div>
+            <div class="solar-stat-box"><div class="solar-val" id="solar-prod">0 kW</div><div class="solar-lbl">Tootlikkus</div></div>
+            <div class="solar-stat-box"><div class="solar-val" id="solar-profit">0 €/h</div><div class="solar-lbl">Väärtus</div></div>
         </div>
         <div style="font-size:11px; color:var(--subtext); margin-top:10px;" id="solar-desc">Sõltub pilvisusest ja kellaajast</div>
     </div>
@@ -279,7 +283,7 @@
     <div class="card">
         <h2>🚗 Tark Laadija</h2>
         <div class="charger-row">
-            <span style="font-weight:600; font-size:14px;">Kestvus: <span style="color:var(--primary); font-size:16px;" id="charge-duration-lbl">4</span>h</span>
+            <span style="font-weight:600; font-size:14px;">Kestvus: <span style="color:#4CAF50; font-size:16px;" id="charge-duration-lbl">4</span>h</span>
         </div>
         <div class="slider-container">
             <input type="range" min="1" max="12" value="4" id="charge-slider" oninput="calcSmartCharge()">
@@ -292,7 +296,7 @@
     </div>
 
     <div style="text-align:center; color:var(--subtext); font-size:10px; margin-top:20px;">
-        <span id="last-update-text"></span> • v14.0 Solar Pro
+        <span id="last-update-text"></span> • v15.0 Voice Assistant
     </div>
 
 </div>
@@ -324,22 +328,18 @@
 </div>
 
 <script>
-    // GLOBAL STATE
+    // GLOBAL
     let settings = { vat: 1.24, lowPrice: 5, highPrice: 15, theme: 'auto', network: 'none', solar: false, parkKw: 10 };
     let appData = { today: [], tomorrow: [], all: [], todayAvg: 0 };
     let weatherInfo = { wind: 0, temp: 0, cloud: 0, isDay: 0 };
     let chartInstance = null;
     let lastLoadedHour = -1;
+    let isSpeaking = false; // TTS Status
 
-    // FEES (Ligikaudsed s/kWh, Elektrilevi)
-    const FEE_RENEWABLE = 1.13; 
-    const FEE_EXCISE = 0.1;     
+    const FEE_RENEWABLE = 1.13; const FEE_EXCISE = 0.1;     
     const NETWORK_FEES = {
-        'none': { day: 0, night: 0 },
-        'vork1': { day: 4.76, night: 4.76 },
-        'vork2': { day: 6.95, night: 3.99 },
-        'vork3': { day: 3.50, night: 2.00 }, // Hinnanguline
-        'vork4': { day: 4.64, night: 2.72 }  // Hinnanguline Võrk 4
+        'none': { day: 0, night: 0 }, 'vork1': { day: 4.76, night: 4.76 },
+        'vork2': { day: 6.95, night: 3.99 }, 'vork3': { day: 3.50, night: 2.00 }, 'vork4': { day: 4.64, night: 2.72 }
     };
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -358,9 +358,60 @@
         await Promise.all([getElectricity(), getWeather()]);
         lastLoadedHour = new Date().getHours();
         document.getElementById('last-update-text').innerText = "Värskendatud: " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        updateSolarCalc(); // Käivita solar calc kohe kui ilm olemas
+        updateSolarCalc();
     }
 
+    // --- VOICE ASSISTANT (TTS) ---
+    function playGuruAudio() {
+        if (!('speechSynthesis' in window)) {
+            alert("Sinu seade ei toeta häälkäsklusi.");
+            return;
+        }
+
+        const btn = document.getElementById('guru-speaker-btn');
+
+        if (isSpeaking) {
+            window.speechSynthesis.cancel();
+            isSpeaking = false;
+            btn.classList.remove('speaking');
+            btn.innerText = "🔊";
+            return;
+        }
+
+        const now = new Date();
+        const priceText = document.getElementById('current-price').innerText.replace('.', ' koma ');
+        const rawGuru = document.getElementById('guru-text').innerText;
+        // Eemaldame Emojid lugemise ajaks, muidu loeb neid sõnadena
+        const cleanGuru = rawGuru.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
+        
+        const speechText = `Kell on ${now.getHours()}. Elektri hind on ${priceText} senti. ${cleanGuru}`;
+
+        const utterance = new SpeechSynthesisUtterance(speechText);
+        utterance.lang = 'et-EE'; // Eesti keel
+        utterance.rate = 0.95; // Veidi rahulikum tempo
+        
+        utterance.onstart = () => {
+            isSpeaking = true;
+            btn.classList.add('speaking');
+            btn.innerText = "⏸️";
+        };
+        
+        utterance.onend = () => {
+            isSpeaking = false;
+            btn.classList.remove('speaking');
+            btn.innerText = "🔊";
+        };
+
+        utterance.onerror = () => {
+            isSpeaking = false;
+            btn.classList.remove('speaking');
+            btn.innerText = "🔊";
+        };
+
+        window.speechSynthesis.speak(utterance);
+    }
+
+    // DATA
     async function getElectricity() {
         const now = new Date();
         const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
@@ -388,34 +439,23 @@
     }
 
     function calculateFinalPrice(item) {
-        const date = new Date(item.timestamp * 1000);
-        const hour = date.getHours();
+        const date = new Date(item.timestamp * 1000); const hour = date.getHours();
         const isNight = (hour >= 22 || hour < 7) || (date.getDay() === 0 || date.getDay() === 6);
-        
         let networkFee = 0;
-        if (['vork2', 'vork3', 'vork4'].includes(settings.network)) {
-            networkFee = isNight ? NETWORK_FEES[settings.network].night : NETWORK_FEES[settings.network].day;
-        } else {
-            networkFee = NETWORK_FEES[settings.network].day;
-        }
-
+        if (['vork2', 'vork3', 'vork4'].includes(settings.network)) { networkFee = isNight ? NETWORK_FEES[settings.network].night : NETWORK_FEES[settings.network].day; } 
+        else { networkFee = NETWORK_FEES[settings.network].day; }
         const fees = (settings.network === 'none') ? 0 : (networkFee + FEE_RENEWABLE + FEE_EXCISE);
         return (item.price / 10 * settings.vat) + (fees * settings.vat);
     }
 
     function processElectricity(data) {
         if (!data || !Array.isArray(data)) return;
-        const todayStr = new Date().toDateString();
-        const tmrwStr = new Date(new Date().setDate(new Date().getDate() + 1)).toDateString();
-
+        const todayStr = new Date().toDateString(); const tmrwStr = new Date(new Date().setDate(new Date().getDate() + 1)).toDateString();
         appData.today = data.filter(d => new Date(d.timestamp*1000).toDateString() === todayStr);
         appData.tomorrow = data.filter(d => new Date(d.timestamp*1000).toDateString() === tmrwStr);
         appData.all = [...appData.today, ...appData.tomorrow];
         appData.todayAvg = getAvg(appData.today);
-
-        document.getElementById('loader').classList.add('hidden');
-        document.getElementById('main-content').classList.remove('hidden');
-
+        document.getElementById('loader').classList.add('hidden'); document.getElementById('main-content').classList.remove('hidden');
         updateHero(); updateAppliancesMatrix(); renderClock(); calcSmartCharge(); renderChart();
     }
 
@@ -424,7 +464,6 @@
         const curr = appData.today.find(d => d.timestamp === nowTs);
         const card = document.getElementById('hero-card');
         const priceEl = document.getElementById('current-price');
-        
         document.getElementById('price-type-badge').innerText = settings.network === 'none' ? "Börsihind" : "Lõpphind";
         card.classList.remove('effect-aurora', 'effect-pulse');
 
@@ -432,11 +471,9 @@
             const price = calculateFinalPrice(curr);
             priceEl.innerText = price.toFixed(2);
             document.getElementById('current-time').innerText = new Date().getHours() + ":00 – " + (new Date().getHours()+1) + ":00";
-            
             updateGuru(price);
 
-            let isGood = price < settings.lowPrice;
-            let isBad = price > settings.highPrice;
+            let isGood = price < settings.lowPrice; let isBad = price > settings.highPrice;
             if (settings.solar) { isGood = price > settings.highPrice; isBad = price < settings.lowPrice; }
 
             if(isGood) { card.classList.add('effect-aurora'); priceEl.style.color = settings.solar ? '#FFD700' : '#4CAF50'; } 
@@ -464,67 +501,50 @@
         el.innerText = msg;
     }
 
-    // --- SOLAR LOGIC ---
     function toggleSolarSettings() {
         settings.solar = document.getElementById('set-solar').checked;
         document.getElementById('solar-box').style.display = settings.solar ? 'block' : 'none';
-        updateHero(); // Refresh hero logic
+        updateHero();
     }
 
     function updateSolarCalc() {
         if(!settings.solar) return;
         const capacity = parseFloat(document.getElementById('solar-capacity').value) || 0;
         settings.parkKw = capacity;
-        
-        // Lihtne mudel: Kui on öö, 0. Kui on päev, vaatame pilvisust.
-        // Pilved 0% -> 100% tootlikkust. Pilved 100% -> 10% tootlikkust.
         let efficiency = 0;
-        if (weatherInfo.isDay) {
-            efficiency = (100 - weatherInfo.cloud) / 100;
-            if (efficiency < 0.1) efficiency = 0.1; // Hajusvalgus
-        }
-        
+        if (weatherInfo.isDay) { efficiency = (100 - weatherInfo.cloud) / 100; if (efficiency < 0.1) efficiency = 0.1; }
         const currentProd = capacity * efficiency;
         const nowTs = Math.floor(Date.now()/1000/3600)*3600;
         const currPriceObj = appData.today.find(d => d.timestamp === nowTs);
-        const currentPrice = currPriceObj ? (currPriceObj.price / 10) : 0; // Börsihind s/kWh -> €/kWh arvutuseks
-        
-        const profitPerHour = (currentProd * (currentPrice / 100)).toFixed(2); // kW * €/kWh = €/h
+        const currentPrice = currPriceObj ? (currPriceObj.price / 10) : 0; 
+        const profitPerHour = (currentProd * (currentPrice / 100)).toFixed(2); 
 
         document.getElementById('solar-prod').innerText = currentProd.toFixed(1) + " kW";
         document.getElementById('solar-profit').innerText = profitPerHour + " €/h";
-        
-        let desc = weatherInfo.isDay ? `Pilvisus ${weatherInfo.cloud}%` : "Pime aeg";
-        document.getElementById('solar-desc').innerText = desc;
+        document.getElementById('solar-desc').innerText = weatherInfo.isDay ? `Pilvisus ${weatherInfo.cloud}%` : "Pime aeg";
     }
 
-    // --- CHART (ENEFIT GREEN) ---
     function renderChart() {
         const mode = document.getElementById('day-select').value;
         let data = mode === 'today' ? appData.today : appData.tomorrow;
         if (mode === 'today') { const currentH = new Date().getHours(); data = data.filter(d => new Date(d.timestamp * 1000).getHours() >= currentH); }
-        
         if(!data.length) { document.getElementById('priceChart').style.display = 'none'; document.getElementById('no-data-msg').classList.remove('hidden'); return; }
         else { document.getElementById('priceChart').style.display = 'block'; document.getElementById('no-data-msg').classList.add('hidden'); }
 
         const ctx = document.getElementById('priceChart').getContext('2d');
         const labels = data.map(d => new Date(d.timestamp*1000).getHours());
         const values = data.map(d => parseFloat(calculateFinalPrice(d).toFixed(2)));
-        
         if(chartInstance) chartInstance.destroy();
 
-        // ENEFIT GREEN FILL
         const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-        gradient.addColorStop(0, 'rgba(76, 175, 80, 0.4)');
-        gradient.addColorStop(1, 'rgba(76, 175, 80, 0.0)');
+        gradient.addColorStop(0, 'rgba(76, 175, 80, 0.4)'); gradient.addColorStop(1, 'rgba(76, 175, 80, 0.0)');
 
         chartInstance = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Hind', data: values, borderWidth: 2, stepped: true, fill: true, backgroundColor: gradient,
-                    borderColor: '#4CAF50', // ALATI ROHELINE
+                    label: 'Hind', data: values, borderWidth: 2, stepped: true, fill: true, backgroundColor: gradient, borderColor: '#4CAF50',
                     pointRadius: (ctx) => (ctx.dataIndex === 0) ? 6 : 0, pointBackgroundColor: '#4CAF50', pointBorderColor: '#fff', pointBorderWidth: 2
                 }]
             },
@@ -539,7 +559,6 @@
         });
     }
 
-    // --- MUUD ---
     function getAvg(arr) {
         if(!arr.length) return 0;
         const sum = arr.reduce((acc, i) => acc + calculateFinalPrice(i), 0);
@@ -547,34 +566,23 @@
     }
 
     function renderClock() {
-        const canvas = document.getElementById('clock-canvas');
-        const ctx = canvas.getContext('2d');
-        const dpr = window.devicePixelRatio || 1;
-        const size = 200; canvas.width = size * dpr; canvas.height = size * dpr; ctx.scale(dpr, dpr);
-        const centerX = size/2; const centerY = size/2; const radius = size/2 - 10;
-        ctx.clearRect(0, 0, size, size);
+        const canvas = document.getElementById('clock-canvas'); const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1; const size = 200; canvas.width = size * dpr; canvas.height = size * dpr; ctx.scale(dpr, dpr);
+        const centerX = size/2; const centerY = size/2; const radius = size/2 - 10; ctx.clearRect(0, 0, size, size);
 
         appData.today.forEach(item => {
-            const date = new Date(item.timestamp * 1000);
-            const hour = date.getHours();
-            const price = calculateFinalPrice(item);
-            const startAngle = (hour * (Math.PI * 2 / 24)) + 0.05;
-            const endAngle = ((hour + 1) * (Math.PI * 2 / 24)) - 0.05;
+            const date = new Date(item.timestamp * 1000); const hour = date.getHours(); const price = calculateFinalPrice(item);
+            const startAngle = (hour * (Math.PI * 2 / 24)) + 0.05; const endAngle = ((hour + 1) * (Math.PI * 2 / 24)) - 0.05;
             ctx.beginPath(); ctx.arc(centerX, centerY, radius, startAngle, endAngle); ctx.lineCap = "round"; ctx.lineWidth = 6;
             
             if (settings.solar) {
-                if (price > settings.highPrice) ctx.strokeStyle = '#FFD700';
-                else if (price < settings.lowPrice) ctx.strokeStyle = '#4CAF50';
-                else ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--clock-gray');
+                if (price > settings.highPrice) ctx.strokeStyle = '#FFD700'; else if (price < settings.lowPrice) ctx.strokeStyle = '#4CAF50'; else ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--clock-gray');
             } else {
-                if(price < settings.lowPrice) ctx.strokeStyle = '#4CAF50';
-                else if(price > settings.highPrice) ctx.strokeStyle = '#FF3B30';
-                else ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--clock-gray');
+                if(price < settings.lowPrice) ctx.strokeStyle = '#4CAF50'; else if(price > settings.highPrice) ctx.strokeStyle = '#FF3B30'; else ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--clock-gray');
             }
             ctx.stroke();
         });
-        const currentH = new Date().getHours();
-        const angle = (currentH * (Math.PI * 2 / 24)) + (Math.PI / 24); 
+        const currentH = new Date().getHours(); const angle = (currentH * (Math.PI * 2 / 24)) + (Math.PI / 24); 
         ctx.beginPath(); ctx.arc(centerX + (radius - 12) * Math.cos(angle), centerY + (radius - 12) * Math.sin(angle), 3, 0, Math.PI * 2);
         ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text'); ctx.fill();
     }
@@ -582,9 +590,9 @@
     function calcSmartCharge() {
         const duration = parseInt(document.getElementById('charge-slider').value);
         document.getElementById('charge-duration-lbl').innerText = duration;
-        const nowTs = Math.floor(Date.now()/1000/3600)*3600;
-        const futureData = appData.all.filter(d => d.timestamp >= nowTs);
+        const nowTs = Math.floor(Date.now()/1000/3600)*3600; const futureData = appData.all.filter(d => d.timestamp >= nowTs);
         if(futureData.length < duration) return;
+
         let bestAvg = Infinity; let bestStartItem = null;
         for(let i=0; i <= futureData.length - duration; i++) {
             let sum = 0; for(let j=0; j<duration; j++) sum += calculateFinalPrice(futureData[i+j]);
@@ -598,7 +606,6 @@
         }
     }
 
-    // --- APPLIANCES ---
     const devices = [
         { id: 'sauna', kw: 9, hours: 3, name: "Elektrikeris", desc: "9 kW keris, kütmine 3 tundi." },
         { id: 'wash', kw: 2.5, hours: 3, name: "Pesu ja Kuivatus", desc: "Pesumasin + Kuivati (3h)." },
@@ -617,15 +624,11 @@
     }
     function updateAppliancesMatrix() {
         devices.forEach(dev => {
-            const costEl = document.getElementById(`cost-${dev.id}`);
-            const bestEl = document.getElementById(`best-${dev.id}`);
-            const nowTs = Math.floor(Date.now()/1000/3600)*3600;
-            const startIndex = appData.all.findIndex(d => d.timestamp === nowTs);
+            const costEl = document.getElementById(`cost-${dev.id}`); const bestEl = document.getElementById(`best-${dev.id}`);
+            const nowTs = Math.floor(Date.now()/1000/3600)*3600; const startIndex = appData.all.findIndex(d => d.timestamp === nowTs);
             if (startIndex !== -1 && startIndex + dev.hours <= appData.all.length) {
-                let sumCurrent = 0;
-                for(let i=0; i<dev.hours; i++) sumCurrent += calculateFinalPrice(appData.all[startIndex + i]);
-                const avgCurrent = sumCurrent / dev.hours;
-                const totalCostCurrent = avgCurrent * dev.kw * dev.hours / 100;
+                let sumCurrent = 0; for(let i=0; i<dev.hours; i++) sumCurrent += calculateFinalPrice(appData.all[startIndex + i]);
+                const avgCurrent = sumCurrent / dev.hours; const totalCostCurrent = avgCurrent * dev.kw * dev.hours / 100;
                 costEl.innerText = totalCostCurrent.toFixed(2) + "€";
                 if (avgCurrent > settings.highPrice) { costEl.classList.add('app-badge-expensive'); costEl.style.color = 'var(--danger)'; } 
                 else { costEl.classList.remove('app-badge-expensive'); costEl.style.color = 'var(--text)'; }
@@ -651,7 +654,6 @@
         } catch(e) {}
     }
 
-    // SETTINGS
     function openSettings() { document.getElementById('settings-modal').style.display = 'flex'; }
     function saveSettings() {
         settings.vat = parseFloat(document.getElementById('set-vat').value) / 100 + 1;
@@ -662,6 +664,7 @@
         localStorage.setItem('user_settings', JSON.stringify(settings));
         document.getElementById('settings-modal').style.display = 'none';
         document.getElementById('solar-box').style.display = settings.solar ? 'block' : 'none';
+        if(settings.solar) document.body.classList.add('solar-mode'); else document.body.classList.remove('solar-mode');
         processElectricity(appData.all);
     }
     function loadSettings() {
@@ -669,20 +672,19 @@
         if(saved) {
             const s = JSON.parse(saved);
             document.getElementById('set-vat').value = Math.round((s.vat - 1) * 100);
-            document.getElementById('set-low').value = s.lowPrice;
-            document.getElementById('set-high').value = s.highPrice;
+            document.getElementById('set-low').value = s.lowPrice; document.getElementById('set-high').value = s.highPrice;
+            document.getElementById('vat-display').innerText = document.getElementById('set-vat').value;
             document.getElementById('set-network').value = s.network || 'none';
             document.getElementById('set-solar').checked = s.solar || false;
             document.getElementById('solar-box').style.display = s.solar ? 'block' : 'none';
             settings = s;
             if(settings.theme) applyTheme();
+            if(settings.solar) document.body.classList.add('solar-mode');
         }
     }
     function toggleTheme() { settings.theme = (settings.theme === 'auto') ? 'dark' : (settings.theme === 'dark' ? 'light' : 'auto'); applyTheme(); }
-    function toggleSolarSettings() { settings.solar = document.getElementById('set-solar').checked; document.getElementById('solar-box').style.display = settings.solar ? 'block' : 'none'; updateHero(); }
     function applyTheme() {
-        const btn = document.getElementById('theme-toggle-btn');
-        const root = document.documentElement;
+        const btn = document.getElementById('theme-toggle-btn'); const root = document.documentElement;
         if (settings.theme === 'auto') { btn.innerText = "Auto"; if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) root.setAttribute('data-theme', 'dark'); else root.removeAttribute('data-theme'); } 
         else if (settings.theme === 'dark') { btn.innerText = "Tume"; root.setAttribute('data-theme', 'dark'); } 
         else { btn.innerText = "Hele"; root.removeAttribute('data-theme'); }
